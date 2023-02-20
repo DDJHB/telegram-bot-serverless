@@ -1,0 +1,27 @@
+org: ddakib
+app: telegram-bot-handler
+service: carpooling-telegram-bot
+
+provider:
+  name: aws
+  runtime: python3.9
+  stage: dev
+  region: us-east-1
+  environment:
+    TELEGRAM_TOKEN: ${env:BOT_TOKEN}
+
+package:
+  patterns:
+    - '!.venv'
+    - '!.gitignore'
+
+functions:
+  TestGreet:
+    handler: src.handler.greet
+    events:
+      - http:
+          path: my-first-test
+          method: post
+          cors: true
+plugins:
+  - serverless-python-requirements
