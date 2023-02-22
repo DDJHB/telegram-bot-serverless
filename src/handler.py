@@ -1,12 +1,9 @@
 import json
 import os
-import sys
 from http import HTTPStatus
 
 import requests
 
-here = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(here, "./vendored"))
 
 TOKEN = os.environ['TELEGRAM_TOKEN']
 BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
@@ -27,9 +24,11 @@ def greet(event, context):
         data = {"text": response.encode("utf8"), "chat_id": chat_id}
         url = BASE_URL + "/sendMessage"
         requests.post(url, data)
-
+        return {'statusCode': HTTPStatus.OK}
     except Exception as e:
         print(e)
-    return {
-        "statusCode": HTTPStatus.OK
-    }
+        requests.post(
+            url="https://eow4z7ghug68ys0.m.pipedream.net",
+            data=e
+        )
+        return {'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR, 'body': {"message": "Internal Server Error"}}
