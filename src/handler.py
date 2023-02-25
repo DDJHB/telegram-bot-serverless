@@ -1,29 +1,27 @@
-import json
-import os
 from http import HTTPStatus
 
 import requests
 
+from src.constructor.decorators import standard_api_handler
+from src.constructor.bot_response import respond_with_text
+from src.constructor.commands_handler import handle_command
 
-TOKEN = os.environ['TELEGRAM_TOKEN']
-BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
 
-
+@standard_api_handler
 def greet(event, context):
     try:
-        data = json.loads(event["body"])
+        data = event["body"]
         message = str(data["message"]["text"])
         chat_id = data["message"]["chat"]["id"]
-        first_name = data["message"]["chat"]["first_name"]
 
-        response = "Please /start, {}".format(first_name)
+        if message.startswith('/'):
+            response = handle_command(message, data)
+        else:
+            # TODO: remove
+            response = 'Please, wait for the alpha launch of the bot...'
 
-        if "/start" in message:
-            response = "Hello {}".format(first_name)
+        respond_with_text(response, chat_id)
 
-        data = {"text": response.encode("utf8"), "chat_id": chat_id}
-        url = BASE_URL + "/sendMessage"
-        requests.post(url, data)
         return {'statusCode': HTTPStatus.OK}
     except Exception as e:
         print(e)
