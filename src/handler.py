@@ -4,7 +4,7 @@ import requests
 
 from src.constructor.decorators import standard_api_handler
 from src.constructor.bot_response import respond_with_text
-from src.constructor.commands_handler import handle_command
+from src.constructor.command_handler import handle_command
 
 
 @standard_api_handler
@@ -15,7 +15,7 @@ def greet(event, context):
         chat_id = data["message"]["chat"]["id"]
 
         if message.startswith('/'):
-            response = handle_command(message, data)
+            response = handle_command(data)
         else:
             # TODO: remove
             response = 'Please, wait for the alpha launch of the bot...'
