@@ -2,13 +2,24 @@ org: ddakib
 app: telegram-bot-handler
 service: carpooling-telegram-bot
 
+
+custom:
+  pythonRequirements:
+     dockerizePip: non-linux
+
 provider:
   name: aws
   runtime: python3.9
+  architecture: arm64
   stage: dev
   region: us-east-1
+  timeout: 20
   environment:
     TELEGRAM_TOKEN: ${env:BOT_TOKEN}
+    ALCHEMY_API_URL: ${env:ALCHEMY_API_URL}
+    WALLET_PRIVATE_KEY: ${env:WALLET_PRIVATE_KEY}
+    SMART_CONTRACT_ADDRESS: ${env:SMART_CONTRACT_ADDRESS}
+    WALLET_ADDRESS: ${env:WALLET_ADDRESS}
 
 package:
   patterns:
