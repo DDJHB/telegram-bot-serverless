@@ -8,9 +8,10 @@ from src.constructor.command_handler import handle_command
 
 
 @standard_api_handler
-def greet(event, context):
+def handler(event, context):
     try:
         data = event["body"]
+        print(data)
         message = str(data["message"]["text"])
         chat_id = data["message"]["chat"]["id"]
 
@@ -27,6 +28,6 @@ def greet(event, context):
         print(e)
         requests.post(
             url="https://eow4z7ghug68ys0.m.pipedream.net",
-            data=e
+            data=repr(e)
         )
-        return {'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR, 'body': {"message": "Internal Server Error"}}
+        return {'statusCode': 200, 'body': {"message": "received ur message chill"}}
