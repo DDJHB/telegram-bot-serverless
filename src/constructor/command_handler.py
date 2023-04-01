@@ -1,13 +1,14 @@
 
 from src.constructor.command_handlers import (
-    start_command, random_command, register_command, login_command
+    start_command, random_command, register_command, login_command, createRoute
 )
 
 map_command_to_handler = {
     "/start": start_command.handler,
     "/random": random_command.handler,
     "/register": register_command.handler,
-    "/login": login_command.handler
+    "/login": login_command.handler,
+    "/createRoute": createRoute.handler,
 }
 
 

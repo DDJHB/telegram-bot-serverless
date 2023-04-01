@@ -1,10 +1,12 @@
 from http import HTTPStatus
+import traceback
 
 import requests
 
 from src.constructor.decorators import standard_api_handler
 from src.constructor.bot_response import respond_with_text
 from src.constructor.command_handler import handle_command
+from src.constructor.step_handler import handle_step
 
 
 @standard_api_handler
@@ -12,20 +14,22 @@ def handler(event, context):
     try:
         data = event["body"]
         print(data)
-        message = str(data["message"]["text"])
-        chat_id = data["message"]["chat"]["id"]
-
-        if message.startswith('/'):
-            response = handle_command(data)
+        message = data["message"]
+        if text := message.get("text"):
+            text = str(text)
+            if text.startswith('/'):
+                response = handle_command(data)
+            else:
+                response = handle_step(data)
         else:
-            # TODO: remove
-            response = 'Please, wait for the alpha launch of the bot...'
+            response = handle_step(data)
 
+        chat_id = data["message"]["chat"]["id"]
         respond_with_text(response, chat_id)
 
         return {'statusCode': HTTPStatus.OK}
     except Exception as e:
-        print(e)
+        print(traceback.format_exc())
         requests.post(
             url="https://eow4z7ghug68ys0.m.pipedream.net",
             data=repr(e)
