@@ -1,7 +1,7 @@
 import os
 import json
 
-from src.constructor.web3_utils import send_transaction_to_contract
+from src.constructor.web3_utils import send_transaction_to_contract, get_base_wallet_info
 from src.database.eth_transactions import put_transaction_request
 
 
@@ -19,18 +19,20 @@ def handler(data):
     return response
 
 
-def register_user(username: str, password: str, chat_id: str) -> str:
+def register_user(username: str, password: str, chat_id: int) -> str:
     function_name = "registerUser"
-    contract_name = "onboarding_contract_abi"
+    contract_name = "onboarding"
     function_args = {
       "username": username,
       "password": password,
     }
+    wallet_info = get_base_wallet_info()
 
     tx_hash = send_transaction_to_contract(
-        contract_path=os.path.join("smart_contract_abis", f"{contract_name}.json"),
+        wallet_info=wallet_info,
+        contract_name=contract_name,
         function_name=function_name,
-        function_args=[username, password]
+        function_args=[username, password],
     )
 
     # save to db
