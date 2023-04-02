@@ -1,7 +1,5 @@
-import json
 
-
-from src.database.chat_state import get_chat_state_record
+from src.database.chat_state import get_chat_state
 from src.constructor.step_handlers import (
     create_route_steps
 )
@@ -9,16 +7,19 @@ from src.constructor.step_handlers import (
 
 def handle_step(data):
     chat_id = data["message"]["chat"]["id"]
-    record = get_chat_state_record(chat_id)
-    if not record or not record['state']:
-        return "Wait for the launch of the bot..."
+    record = get_chat_state(chat_id)
+    if not record or not record['active_command']:
+        return "Please, enter a command first!"
 
-    state = json.loads(record['state'])
-    step_handler = map_active_command_to_handler(state['activeCommand'])
+    active_command = record['active_command']
+    step_handler = map_active_command_to_handler(active_command)
+    if not step_handler:
+        return "This feature has not been developed yet..."
+
     return step_handler(data, record)
 
 
-def map_active_command_to_handler(active_command):
+def map_active_command_to_handler(active_command: str):
     mapped_handlers = {
         "createRoute": create_route_steps.step_handler
     }

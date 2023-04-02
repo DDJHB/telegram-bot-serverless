@@ -88,3 +88,30 @@ resources:
           - AttributeName: pk
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+
+    RoutesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: routes-table
+        AttributeDefinitions:
+          - AttributeName: owner_username
+            AttributeType: S
+          - AttributeName: route_id
+            AttributeType: S
+          - AttributeName: chat_id
+            AttributeType: N
+        KeySchema:
+          - AttributeName: owner_username
+            KeyType: HASH
+          - AttributeName: route_id
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: gsi1
+            KeySchema:
+              - AttributeName: chat_id
+                KeyType: HASH
+              - AttributeName: route_id
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+        BillingMode: PAY_PER_REQUEST
