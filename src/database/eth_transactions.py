@@ -6,7 +6,7 @@ resource = boto3.resource('dynamodb')
 table = resource.Table('ethereum-transactions-table')
 
 
-def put_transaction_request(tx_hash: str, chat_id: str, extra_fields: dict[str, str]) -> None:
+def put_transaction_request(tx_hash: str, chat_id: int, extra_fields: dict[str, str]) -> None:
     table.put_item(
         Item={
             "pk": tx_hash,

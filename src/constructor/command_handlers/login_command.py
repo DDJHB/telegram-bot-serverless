@@ -17,7 +17,7 @@ def handler(data):
 def login_user(username, password):
     try:
         response = call_view_contract_method(
-            contract_path="smart_contract_abis/onboarding_contract_abi.json",
+            contract_name="onboarding",
             function_name="login",
             function_args=[username, password]
         )

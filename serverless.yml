@@ -22,7 +22,8 @@ provider:
     TELEGRAM_TOKEN: ${env:BOT_TOKEN}
     ALCHEMY_API_URL: ${env:ALCHEMY_API_URL}
     WALLET_PRIVATE_KEY: ${env:WALLET_PRIVATE_KEY}
-    SMART_CONTRACT_ADDRESS: ${env:SMART_CONTRACT_ADDRESS}
+    ONBOARDING_CONTRACT_ADDRESS: ${env:ONBOARDING_CONTRACT_ADDRESS}
+    PAYMENT_CONTRACT_ADDRESS: ${env:PAYMENT_CONTRACT_ADDRESS}
     WALLET_ADDRESS: ${env:WALLET_ADDRESS}
     ROUTING_SERVICE_API_KEY: AIzaSyDQEqeNOjLEhMSpiIp1-EnUgyJFdRGA4cI
 
@@ -84,6 +85,18 @@ resources:
         AttributeDefinitions:
           - AttributeName: pk   # chat_id
             AttributeType: N
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    UserInfoTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: user-info-table
+        AttributeDefinitions:
+          - AttributeName: pk   # username
+            AttributeType: S
         KeySchema:
           - AttributeName: pk
             KeyType: HASH

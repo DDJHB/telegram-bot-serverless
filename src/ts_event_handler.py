@@ -12,10 +12,12 @@ def handler(event, context):
         tx_event_data = event['body']
         tx_hash = tx_event_data['event']['transaction']['hash']
         transaction_data = get_transaction(tx_hash)
+        function_name = transaction_data['function_name']
 
         logs = process_tx_hash(
             tx_hash=tx_hash,
-            contract_path=os.path.join("smart_contract_abis", f"{transaction_data['contract_name']}.json")
+            contract_name=transaction_data['contract_name'],
+            function_name=function_name
         )
 
         if logs[0]['args']['got_registered']:
