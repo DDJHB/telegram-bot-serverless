@@ -1,7 +1,9 @@
+import json
 import os
 
 from src.constructor.decorators import standard_api_handler
 from src.constructor.web3_utils import process_tx_hash
+from src.database.chat_state import update_chat_state
 from src.database.eth_transactions import get_transaction
 from src.constructor.bot_response import respond_with_text
 
@@ -20,12 +22,19 @@ def handler(event, context):
             function_name=function_name
         )
 
-        if logs[0]['args']['got_registered']:
-            message = f"{transaction_data['username']}, you have been registered successfully!"
-        else:
-            message = f"You have previously been registered. Please, login into your account to proceed!"
+        if logs[0]['args'].get('got_registered') is not None:
+            if logs[0]['args']['got_registered']:
+                message = f"Please enter your Metamask wallet address!"
+            else:
+                message = f"You have previously been registered. Please, login into your account to proceed!"
+                update_chat_state({
+                    "active_command": None,
+                    "current_step_index": 0,
+                    "command_info": json.dumps({})}
+                )
 
-        respond_with_text(message, transaction_data["chat_id"])
+            respond_with_text(message, transaction_data["chat_id"])
+
         return {'statusCode': 200}
     except Exception as error:
         print(error)
