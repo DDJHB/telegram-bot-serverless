@@ -3,6 +3,7 @@ from datetime import datetime
 from uuid import uuid4
 
 import boto3
+from boto3.dynamodb.conditions import Key
 
 
 resource = boto3.resource('dynamodb')
@@ -16,12 +17,32 @@ def put_route(username: str, chat_id: int, route_info: dict):
     table.put_item(
         Item={
             **route_info_fixed,
-            "route_id": route_id,
+            "route_id": f"ROUTE#{route_id}",
             "owner_username": username,
             "chat_id": chat_id,
             "start_time_epoch": start_time_epoch,
         }
     )
+
+
+def get_user_routes(
+    username: str,
+    limit: int = 5,
+    last_key: 'dict|None' = None,
+):
+    query_args = {
+        "KeyConditionExpression": (
+            Key('owner_username').eq(username)
+            &
+            Key('route_id').begins_with("ROUTE")
+        ),
+        "Limit": limit
+    }
+    if last_key:
+        query_args.update({"ExclusiveStartKey": last_key})
+
+    response = table.query(**query_args)
+    return response
 
 
 def prepare_inner_dicts_for_db(info):

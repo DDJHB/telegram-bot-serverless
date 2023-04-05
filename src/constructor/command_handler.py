@@ -1,6 +1,11 @@
 
+# global commands
 from src.constructor.command_handlers import (
-    start_command, random_command, register_command, login_command, create_route_command
+    start_command, random_command, register_command, login_command
+)
+# route commands
+from src.constructor.command_handlers import (
+    create_route_command, delete_route_command, show_routes_command
 )
 
 map_command_to_handler = {
@@ -9,6 +14,8 @@ map_command_to_handler = {
     "/register": register_command.handler,
     "/login": login_command.handler,
     "/createRoute": create_route_command.handler,
+    "/showMyRoutes": show_routes_command.handler,
+    #"/deleteRoute": delete_route_command.handler,
 }
 
 

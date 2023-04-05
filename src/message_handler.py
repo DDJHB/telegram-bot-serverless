@@ -5,8 +5,10 @@ import requests
 
 from src.constructor.decorators import standard_api_handler
 from src.constructor.bot_response import respond_with_text
+
 from src.constructor.command_handler import handle_command
 from src.constructor.step_handler import handle_step
+from src.constructor.callback_data_handler import handle_callback_data
 
 
 @standard_api_handler
@@ -14,8 +16,9 @@ def handler(event, context):
     try:
         data = event["body"]
         print(data)
-        message = data["message"]
-        if text := message.get("text"):
+        if data.get("callback_query"):
+            response = handle_callback_data(data)
+        elif text := data["message"].get("text"):
             text = str(text)
             if text.startswith('/'):
                 response = handle_command(data)
