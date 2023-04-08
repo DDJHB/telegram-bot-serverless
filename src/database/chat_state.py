@@ -6,13 +6,14 @@ table = resource.Table('user-chat-state-table')
 
 
 def put_chat_state(chat_id: int, other_fields: dict):
-    table.put_item(
+    response = table.put_item(
         Item={
             "pk": chat_id,
             "chat_id": chat_id,
             **other_fields,
         }
     )
+    return response.get("Attributes")
 
 
 def update_chat_state(new_record: dict):
