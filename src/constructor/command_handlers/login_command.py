@@ -1,6 +1,7 @@
 import time
 
 import web3.exceptions
+from web3 import Web3
 
 from src.constructor.web3_utils import call_view_contract_method
 from src.database.chat_state import update_chat_state
@@ -26,7 +27,7 @@ def login_user(username, password):
         response = call_view_contract_method(
             contract_name="onboarding",
             function_name="login",
-            function_args=[username, password]
+            function_args=[username, Web3.keccak(text=password)]
         )
         print(response)
     except web3.exceptions.ContractLogicError as error:

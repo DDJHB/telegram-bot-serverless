@@ -1,18 +1,22 @@
 import json
-from web3 import Web3, Account
+import web3.exceptions
+from web3 import Web3
 import re
 
-from src.constructor.web3_utils import get_base_wallet_info, send_transaction_to_contract
+from src.constructor.web3_utils import get_base_wallet_info, send_transaction_to_contract, call_view_contract_method
 from src.database.chat_state import update_chat_state
 from src.database.eth_transactions import put_transaction_request
 
-register_sequence = [
-    "password",
+update_sequence = [
+    "oldPassword", "newPassword",
 ]
 
 step_conf = {
-    "password": {
-        "bot_response_message": "Registering User..."
+    "oldPassword": {
+        "bot_response_message": "Enter new password!"
+    },
+    "newPassword": {
+        "bot_response_message": "Updating user information..."
     },
 }
 
@@ -29,24 +33,35 @@ def step_handler(data, state_record):
     new_command_info = old_command_info | update_command_info
     state_record["command_info"] = json.dumps(new_command_info)
 
-    register_user(
-        username=data["message"]["chat"]["username"],
-        password=state_record['command_info']['password'],
-        chat_id=data["message"]["chat"]["id"],
-    )
+    if prev_step_index == 0:
+        if not check_password(username=data["message"]["chat"]["username"],
+                              password=state_record['command_info']['oldPassword']):
+            return "User password is not correct."
 
-    state_record["active_command"] = None
+    else:
+        update_user(
+            username=data["message"]["chat"]["username"],
+            password=state_record['command_info']['newPassword'],
+            chat_id=data["message"]["chat"]["id"],
+        )
+        state_record["active_command"] = None
+
     state_record["current_step_index"] = prev_step_index + 1
     update_chat_state(state_record)
 
-    step_name = register_sequence[prev_step_index]
+    step_name = update_sequence[prev_step_index]
     return step_conf[step_name]["bot_response_message"]
 
 
 def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
-    key = register_sequence[prev_step_index]
+    key = update_sequence[prev_step_index]
+    validator_by_key = {
+        "oldPassword": do_not_validate,
+        "newPassword": validate_password,
+    }
+    key_validator = validator_by_key[key]
     try:
-        is_valid = validate_password(data["message"]['text'])
+        is_valid = key_validator(data["message"]['text'])
         if not is_valid:
             raise UserDataInvalid
     except KeyError as error:
@@ -56,6 +71,10 @@ def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
         key: data["message"]['text']
     }
     return update_command_info
+
+
+def do_not_validate(dummy) -> True:
+    return True
 
 
 def validate_password(password: str):
@@ -72,8 +91,23 @@ class UserDataInvalid(Exception):
     ...
 
 
-def register_user(username: str, password: str, chat_id: int):
-    function_name = "registerUser"
+def check_password(username: str, password: str):
+    try:
+        response = call_view_contract_method(
+            contract_name="onboarding",
+            function_name="login",
+            function_args=[username, Web3.keccak(text=password)]
+        )
+        print(response)
+    except web3.exceptions.ContractLogicError as error:
+        print(error)
+        return False
+
+    return True
+
+
+def update_user(username: str, password: str, chat_id: int):
+    function_name = "updatePassword"
     contract_name = "onboarding"
     function_args = {
         "username": username,
