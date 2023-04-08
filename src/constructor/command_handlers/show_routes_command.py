@@ -58,7 +58,7 @@ def build_keyboard(items: list[dict]) -> dict:
 
 
 def build_single_route_button(route_info: dict) -> list[dict]:
-    return [{"text": route_info.get("route_id", "random"), "callback_data": "wow"}]
+    return [{"text": route_info.get("routeName", "random"), "url": construct_google_maps_url(route_info)}]
 
 
 def build_navigation_buttons() -> list[dict]:
@@ -72,3 +72,15 @@ def build_navigation_buttons() -> list[dict]:
             "callback_data": "next",
         },
     ]
+
+
+def construct_google_maps_url(route_info: dict):
+    destination = json.loads(route_info["destinationLocation"])
+    source = json.loads(route_info["sourceLocation"])
+
+    base_url = "https://www.google.com/maps/dir/?api=1"
+    origin = f"&origin={source['latitude']},{source['longitude']}"
+    destination = f"&destination={destination['latitude']},{destination['longitude']}"
+    travel_mode = "&travelmode=driving"
+    url = base_url + origin + destination + travel_mode
+    return url

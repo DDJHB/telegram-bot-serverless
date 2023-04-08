@@ -20,7 +20,10 @@ def handler(event, context):
         chat_id = extract_chat_id(data)
         chat_state = get_chat_state(chat_id)
         if not chat_state:
-            chat_state = put_chat_state(chat_id, {})
+            put_chat_state(chat_id, {})
+
+        chat_state = get_chat_state(chat_id)  # TODO optimize
+
         if data.get("callback_query"):
             response = handle_callback_data(data, chat_state)
         elif text := data["message"].get("text"):
@@ -41,7 +44,7 @@ def handler(event, context):
             url="https://eow4z7ghug68ys0.m.pipedream.net",
             data=repr(e)
         )
-        return {'statusCode': 200, 'body': {"message": "received ur message chill"}}
+        return {'statusCode': 200, 'body': {"message": "received ur message chill:)"}}
 
 
 def extract_chat_id(data):

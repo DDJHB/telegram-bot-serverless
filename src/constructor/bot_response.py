@@ -43,9 +43,16 @@ def respond_with_inline_keyboard(
 
 
 def update_inline_keyboard(
-    chat_id: int,
-    message_id: int,
-    keyboard_definition: dict,
+        chat_id: int,
+        message_id: int,
+        keyboard_definition: dict,
 ):
-    url = BASE_URL + f"/editMessageReplyMarkup?chat_id={chat_id}&message_id={message_id}&reply_markup={keyboard_definition}"
-    requests.get(url)
+    keyboard_definition = json.dumps(keyboard_definition)
+    url = BASE_URL + f"/editMessageReplyMarkup"
+    data = {
+        "chat_id": chat_id,
+        "message_id": message_id,
+        "reply_markup": keyboard_definition,
+    }
+    response = requests.post(url, data)
+    print(response.status_code, response.text)

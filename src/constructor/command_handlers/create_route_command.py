@@ -1,5 +1,5 @@
 import json
-from src.database.chat_state import put_chat_state
+from src.database.chat_state import update_chat_state
 
 
 def handler(data: dict, chat_state: dict):
@@ -9,7 +9,7 @@ def handler(data: dict, chat_state: dict):
         "current_step_index": 0,
         "command_info": json.dumps({})
     }
+    chat_state.update(command_state)
+    update_chat_state(chat_state)
 
-    put_chat_state(chat_id, command_state)
-
-    return "Please share the starting location! Use Telegram built-in 'share location' attachment."
+    return "Please name your ride!"

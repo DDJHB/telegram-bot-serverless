@@ -15,7 +15,7 @@ map_command_to_handler = {
     "/login": login_command.handler,
     "/createRoute": create_route_command.handler,
     "/showMyRoutes": show_routes_command.handler,
-    #"/deleteRoute": delete_route_command.handler,
+    # "/deleteRoute": delete_route_command.handler,
 }
 
 
@@ -25,6 +25,6 @@ def handle_command(data: dict, chat_state: dict):
     split_message = message.split(' ')
     command, arguments = split_message[0], ''.join(split_message[1:])
     if handler := map_command_to_handler.get(command, chat_state):
-        response = handler(data)
+        response = handler(data, chat_state)
 
     return response

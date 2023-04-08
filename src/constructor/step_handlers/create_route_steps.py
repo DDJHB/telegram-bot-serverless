@@ -16,13 +16,17 @@ def parse_floats_to_decimals(data: dict) -> dict:
 
 
 create_route_sequence = [
-    "sourceLocation", "destinationLocation", "rideStartTime", "pricePerPerson", "maxPassengerCapacity"
+    "routeName", "sourceLocation", "destinationLocation", "rideStartTime", "pricePerPerson", "maxPassengerCapacity"
 ]
 
 step_conf = {
+    "routeName": {
+        "lookup_key": "text",
+        "bot_response_message": "Please share the starting location! Use Telegram built-in 'share location' attachment!"
+    },
     "sourceLocation": {
         "lookup_key": "location",
-        "bot_response_message": "Please share the destination location! Use Telegram built-in 'share location' attachment."
+        "bot_response_message": "Please share the destination location! Use Telegram built-in 'share location' attachment!"
     },
     "destinationLocation": {
         "lookup_key": "location",
@@ -48,7 +52,7 @@ def step_handler(data, chat_state):
 
     try:
         update_command_info = handle_prev_step_data(data, prev_step_index)
-    except UserDataInvalid as error:
+    except UserDataInvalid:
         return "Please, adhere to the format provided!"
 
     old_command_info = json.loads(chat_state['command_info'])
@@ -77,6 +81,7 @@ def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
     key = create_route_sequence[prev_step_index]
     tg_message_lookup_key = step_conf[key]["lookup_key"]
     validator_by_key = {
+        "routeName": do_not_validate,
         "rideStartTime": validate_start_time,
         "sourceLocation": do_not_validate,
         "destinationLocation": do_not_validate,
