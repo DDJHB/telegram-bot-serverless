@@ -8,7 +8,6 @@ from src.constructor.step_handlers import (
 
 
 def handle_step(data: dict, chat_state: dict):
-    chat_id = data["message"]["chat"]["id"]
     if not chat_state or not chat_state['active_command']:
         return "Please, enter a command first!"
 

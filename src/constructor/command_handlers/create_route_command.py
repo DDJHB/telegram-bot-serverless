@@ -7,7 +7,8 @@ def handler(data: dict, chat_state: dict):
     command_state = {
         "active_command": "createRoute",
         "current_step_index": 0,
-        "command_info": json.dumps({})
+        "command_info": json.dumps({}),
+        "login_timestamp": chat_state['login_timestamp'],
     }
 
     put_chat_state(chat_id, command_state)

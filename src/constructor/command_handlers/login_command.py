@@ -1,6 +1,9 @@
+import time
+
 import web3.exceptions
 
 from src.constructor.web3_utils import call_view_contract_method
+from src.database.chat_state import update_chat_state
 
 
 def handler(data: dict, chat_state: dict):
@@ -11,6 +14,10 @@ def handler(data: dict, chat_state: dict):
 
     user_password = message.split(" ")[1]
     response = login_user(username=username, password=user_password)
+    chat_state.update({
+        'login_timestamp': time.time()
+    })
+    update_chat_state(chat_state)
     return response
 
 

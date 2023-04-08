@@ -1,3 +1,4 @@
+import time
 from http import HTTPStatus
 import traceback
 
@@ -20,7 +21,18 @@ def handler(event, context):
         chat_id = extract_chat_id(data)
         chat_state = get_chat_state(chat_id)
         if not chat_state:
-            chat_state = put_chat_state(chat_id, {})
+            chat_state = put_chat_state(chat_id, {
+                "login_timestamp": 0.0
+            })
+
+        if data["message"].get("text") and \
+                (not data["message"].get("text").startswith('/login') or
+                 not data["message"].get("text").startswith('/start')) and \
+                chat_id.get('login_timestamp') and \
+                time.time() - chat_id.get('login_timestamp') > 86400:
+            respond_with_text("Please log in to continue...", chat_id)
+            return {'statusCode': HTTPStatus.OK}
+
         if data.get("callback_query"):
             response = handle_callback_data(data, chat_state)
         elif text := data["message"].get("text"):
