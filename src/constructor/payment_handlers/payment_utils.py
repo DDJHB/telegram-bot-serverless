@@ -34,7 +34,7 @@ def deposit(username: str, amount: float, chat_id: int):
     )
 
 
-def transfer(username: str, amount: float, chat_id: int):
+def transfer(passengers: list[str], username: str, amount: float, chat_id: int):
     function_name = "processPayment"
 
     base_wallet_info = get_base_wallet_info()
@@ -43,7 +43,7 @@ def transfer(username: str, amount: float, chat_id: int):
         wallet_info=base_wallet_info,
         contract_name=contract_name,
         function_name=function_name,
-        function_args=[receiver_wallet_info['wallet_address'], Web3.toWei(amount, 'ether')],
+        function_args=[passengers, receiver_wallet_info['wallet_address'], Web3.toWei(amount, 'ether')],
     )
 
     # save to db

@@ -22,16 +22,8 @@ def handler(event, context):
             function_name=function_name
         )
 
-        if logs[0]['args'].get('got_registered') is not None:
-            if logs[0]['args']['got_registered']:
-                message = f"Please enter your Metamask wallet address!"
-            else:
-                message = f"You have previously been registered. Please, login into your account to proceed!"
-                update_chat_state({
-                    "active_command": None,
-                    "current_step_index": 0,
-                    "command_info": json.dumps({})}
-                )
+        if logs[0]['args'].get('status') is not None:
+            message = logs[0]['args']['message']
 
             respond_with_text(message, transaction_data["chat_id"])
 
