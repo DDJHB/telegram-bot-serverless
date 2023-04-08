@@ -1,16 +1,15 @@
 import json
 
-from src.database.chat_state import update_chat_state, get_chat_state
+from src.database.chat_state import update_chat_state
 from src.database.routes import get_user_routes
 from src.constructor.bot_response import respond_with_inline_keyboard
 
 keyboard_name = "routes_keyboard"
 
 
-def handler(data):
+def handler(data: dict, chat_state: dict):
     chat_id = data["message"]["chat"]["id"]
     username = data['message']['from']['username']
-    chat_state = get_chat_state(chat_id)
 
     response = get_user_routes(username)
     keyboard_definition = build_keyboard(response['Items'])

@@ -1,8 +1,9 @@
+import os
 import json
 from src.database.chat_state import put_chat_state
 
 
-def handler(data):
+def handler(data: dict, chat_state: dict):
     chat_id = data["message"]["chat"]["id"]
     command_state = {
         "active_command": "register",

@@ -1,3 +1,4 @@
+
 from src.database.chat_state import get_chat_state
 from src.constructor.step_handlers import (
     create_route_steps,
@@ -6,18 +7,17 @@ from src.constructor.step_handlers import (
 )
 
 
-def handle_step(data):
+def handle_step(data: dict, chat_state: dict):
     chat_id = data["message"]["chat"]["id"]
-    record = get_chat_state(chat_id)
-    if not record or not record['active_command']:
+    if not chat_state or not chat_state['active_command']:
         return "Please, enter a command first!"
 
-    active_command = record['active_command']
+    active_command = chat_state['active_command']
     step_handler = map_active_command_to_handler(active_command)
     if not step_handler:
         return "This feature has not been developed yet..."
 
-    return step_handler(data, record)
+    return step_handler(data, chat_state)
 
 
 def map_active_command_to_handler(active_command: str):

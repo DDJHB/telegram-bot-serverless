@@ -10,9 +10,8 @@ data_handler_by_keyboard = {
 }
 
 
-def handle_callback_data(data: dict) -> str:
+def handle_callback_data(data: dict, chat_state: dict) -> str:
     keyboard_id = str(data['callback_query']["message"]["message_id"])
-    chat_state = get_chat_state(data['callback_query']["message"]["chat"]["id"])
     keyboard_info = json.loads(chat_state["global_keyboards_info"])[keyboard_id]
 
     if handler := data_handler_by_keyboard[keyboard_info["keyboard_name"]]:
