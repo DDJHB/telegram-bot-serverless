@@ -3,7 +3,7 @@ import web3.exceptions
 from src.constructor.web3_utils import call_view_contract_method
 
 
-def handler(data):
+def handler(data: dict, chat_state: dict):
     username = data["message"]["chat"]["username"]
     message = str(data["message"]["text"])
     if " " not in message:

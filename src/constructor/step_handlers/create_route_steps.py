@@ -43,31 +43,31 @@ step_conf = {
 }
 
 
-def step_handler(data, state_record):
-    prev_step_index = int(state_record['current_step_index'])
+def step_handler(data, chat_state):
+    prev_step_index = int(chat_state['current_step_index'])
 
     try:
         update_command_info = handle_prev_step_data(data, prev_step_index)
     except UserDataInvalid as error:
         return "Please, adhere to the format provided!"
 
-    old_command_info = json.loads(state_record['command_info'])
+    old_command_info = json.loads(chat_state['command_info'])
     new_command_info = old_command_info | update_command_info
-    state_record["command_info"] = json.dumps(new_command_info)
+    chat_state["command_info"] = json.dumps(new_command_info)
 
     if prev_step_index == len(create_route_sequence) - 1:
-        state_record["active_command"] = None
+        chat_state["active_command"] = None
         put_route(
             username=data["message"]["from"]["username"],
             chat_id=data["message"]["chat"]["id"],
             route_info=parse_floats_to_decimals(new_command_info),
         )
-        update_chat_state(state_record)
+        update_chat_state(chat_state)
         step_name = create_route_sequence[prev_step_index]
         return step_conf[step_name]["bot_response_message"]
 
-    state_record["current_step_index"] = prev_step_index + 1
-    update_chat_state(state_record)
+    chat_state["current_step_index"] = prev_step_index + 1
+    update_chat_state(chat_state)
 
     step_name = create_route_sequence[prev_step_index]
     return step_conf[step_name]["bot_response_message"]

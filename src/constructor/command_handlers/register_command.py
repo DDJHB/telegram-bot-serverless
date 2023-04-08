@@ -5,7 +5,7 @@ from src.constructor.web3_utils import send_transaction_to_contract, get_base_wa
 from src.database.eth_transactions import put_transaction_request
 
 
-def handler(data):
+def handler(data: dict, chat_state: dict):
     username = data["message"]["chat"]["username"]
     message = str(data["message"]["text"])
     chat_id = data["message"]["chat"]["id"]

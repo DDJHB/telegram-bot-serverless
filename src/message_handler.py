@@ -9,6 +9,7 @@ from src.constructor.bot_response import respond_with_text
 from src.constructor.command_handler import handle_command
 from src.constructor.step_handler import handle_step
 from src.constructor.callback_data_handler import handle_callback_data
+from src.database.chat_state import get_chat_state
 
 
 @standard_api_handler
@@ -16,18 +17,19 @@ def handler(event, context):
     try:
         data = event["body"]
         print(data)
+        chat_id = extract_chat_id(data)
+        chat_state = get_chat_state(chat_id)
         if data.get("callback_query"):
-            response = handle_callback_data(data)
+            response = handle_callback_data(data, chat_state)
         elif text := data["message"].get("text"):
             text = str(text)
             if text.startswith('/'):
-                response = handle_command(data)
+                response = handle_command(data, chat_state)
             else:
-                response = handle_step(data)
+                response = handle_step(data, chat_state)
         else:
-            response = handle_step(data)
+            response = handle_step(data, chat_state)
 
-        chat_id = data["message"]["chat"]["id"]
         respond_with_text(response, chat_id)
 
         return {'statusCode': HTTPStatus.OK}
@@ -38,3 +40,10 @@ def handler(event, context):
             data=repr(e)
         )
         return {'statusCode': 200, 'body': {"message": "received ur message chill"}}
+
+
+def extract_chat_id(data):
+    if callback_query := data.get("callback_query"):
+        return callback_query["message"]['chat']["id"]
+    else:
+        return data["message"]["chat"]["id"]
