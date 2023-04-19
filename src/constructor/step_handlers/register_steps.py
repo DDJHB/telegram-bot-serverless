@@ -5,13 +5,20 @@ import re
 from src.constructor.web3_utils import get_base_wallet_info, send_transaction_to_contract
 from src.database.chat_state import update_chat_state
 from src.database.eth_transactions import put_transaction_request
+from src.database.user_info import put_wallet_info_record
 
 register_sequence = [
-    "password",
+    "password", "walletAddress", "privateKey"
 ]
 
 step_conf = {
     "password": {
+        "bot_response_message": "Please enter you Metamask wallet address!"
+    },
+    "walletAddress": {
+        "bot_response_message": "Please enter your Metamask wallet private key!"
+    },
+    "privateKey": {
         "bot_response_message": "Registering User..."
     },
 }
@@ -29,13 +36,21 @@ def step_handler(data, state_record):
     new_command_info = old_command_info | update_command_info
     state_record["command_info"] = json.dumps(new_command_info)
 
-    register_user(
-        username=data["message"]["chat"]["username"],
-        password=state_record['command_info']['password'],
-        chat_id=data["message"]["chat"]["id"],
-    )
+    if prev_step_index == len(register_sequence) - 1:
+        put_wallet_info_record(
+            username=data["message"]["chat"]["username"],
+            wallet_address=state_record['command_info']['wallet_address'],
+            private_key=state_record['command_info']['private_key'],
+            extra_fields={}
+        )
+        register_user(
+            username=data["message"]["chat"]["username"],
+            password=state_record['command_info']['password'],
+            chat_id=data["message"]["chat"]["id"],
+        )
 
-    state_record["active_command"] = None
+        state_record["active_command"] = None
+
     state_record["current_step_index"] = prev_step_index + 1
     update_chat_state(state_record)
 
@@ -44,9 +59,15 @@ def step_handler(data, state_record):
 
 
 def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
-    key = register_sequence[prev_step_index]
+    key = step_conf[prev_step_index]
+    validator_by_key = {
+        "password": validate_password,
+        "walletAddress": validate_wallet_address,
+        "privateKey": validate_private_key,
+    }
+    key_validator = validator_by_key[key]
     try:
-        is_valid = validate_password(data["message"]['text'])
+        is_valid = key_validator(data["message"]['text'])
         if not is_valid:
             raise UserDataInvalid
     except KeyError as error:
@@ -68,6 +89,15 @@ def validate_password(password: str):
     return True
 
 
+def validate_wallet_address(wallet_address):
+    return Web3.isAddress(wallet_address)
+
+
+def validate_private_key(private_key, wallet_address):
+    account = Account.privateKeyToAccount(private_key)
+    return account.address.lower() == wallet_address.lower()
+
+
 class UserDataInvalid(Exception):
     ...
 
@@ -79,6 +109,7 @@ def register_user(username: str, password: str, chat_id: int):
         "username": username,
         "password": Web3.keccak(text=password),
     }
+    #TODO change to user wallet
     wallet_info = get_base_wallet_info()
 
     tx_hash = send_transaction_to_contract(
