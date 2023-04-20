@@ -1,6 +1,7 @@
 import time
 from http import HTTPStatus
 import traceback
+import enum
 
 import requests
 
@@ -21,23 +22,17 @@ def handler(event, context):
         chat_id = extract_chat_id(data)
         chat_state = get_chat_state(chat_id)
         if not chat_state:
-            put_chat_state(chat_id, {
-                "login_timestamp": 0.0
-            })
+            put_chat_state(chat_id, {"login_timestamp": 0.0})
 
         chat_state = get_chat_state(chat_id)  # TODO optimize
 
-        if data["message"].get("text") and \
-                (not data["message"].get("text").startswith('/login') or
-                 not data["message"].get("text").startswith('/start')) and \
-                chat_id.get('login_timestamp') and \
-                time.time() - chat_id.get('login_timestamp') > 86400:
-            respond_with_text("Please log in to continue...", chat_id)
-            return {'statusCode': HTTPStatus.OK}
+        error = handle_session_login(data, chat_state, chat_id)
+        if error == UserMessageErrors.UserNotSignedIn:
+            return
 
         if data.get("callback_query"):
             response = handle_callback_data(data, chat_state)
-        elif text := data["message"].get("text"):
+        elif text := data.get("message", {}).get("text"):
             text = str(text)
             if text.startswith('/'):
                 response = handle_command(data, chat_state)
@@ -46,7 +41,8 @@ def handler(event, context):
         else:
             response = handle_step(data, chat_state)
 
-        respond_with_text(response, chat_id)
+        if response:
+            respond_with_text(response, chat_id)
 
         return {'statusCode': HTTPStatus.OK}
     except Exception as e:
@@ -63,3 +59,28 @@ def extract_chat_id(data):
         return callback_query["message"]['chat']["id"]
     else:
         return data["message"]["chat"]["id"]
+
+
+def handle_session_login(data, chat_state, chat_id):
+    day_in_seconds = 1 * 24 * 60 * 60
+    text = data.get("message", {}).get("text")
+    if not text:
+        return
+    if is_login_command(text) or is_start_command(text):
+        return
+    if login_timestamp := chat_state.get("login_timestamp"):
+        if time.time() - login_timestamp > day_in_seconds:
+            respond_with_text("Please log in to continue...", chat_id)
+            return UserMessageErrors.UserNotSignedIn
+
+
+def is_login_command(text):
+    return text.startswith("/login")
+
+
+def is_start_command(text):
+    return text.startswith("/start")
+
+
+class UserMessageErrors(enum.IntEnum):
+    UserNotSignedIn = enum.auto()
