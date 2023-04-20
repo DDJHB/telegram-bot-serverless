@@ -1,26 +1,63 @@
 import json
 from datetime import datetime
 from uuid import uuid4
+import geohash
 
 import boto3
 from boto3.dynamodb.conditions import Key
 
 
 resource = boto3.resource('dynamodb')
-table = resource.Table('routes-table')
+table = resource.Table('routes-table-v2')
+
+DRIVER_TYPENAME = "DRIVER"
+
+index_name_by_precision = {
+    6: "close_range_routes_geohash",
+    5: "mid_range_routes_geohash",
+    4: "long_range_routes_geohash",
+}
 
 
-def put_route(username: str, chat_id: int, route_info: dict):
+def map_proximity_to_precision(proximity: str) -> int:
+    precision_by_proximity = {
+        "long": 4,
+        "mid": 5,
+        "close": 6,
+    }
+
+    precision = precision_by_proximity.get(proximity)
+    print("Geo Precision: ", precision)
+
+    return precision
+
+
+def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
     route_id = str(uuid4())
+    source_location = route_info['sourceLocation']
+    destination_location = route_info['destinationLocation']
+    route_typename = "ROUTE"
+
     route_info_fixed = prepare_inner_dicts_for_db(route_info)
     start_time_epoch = int(datetime.strptime(route_info["rideStartTime"],"%d.%m.%Y %H:%M").timestamp())
     table.put_item(
         Item={
             **route_info_fixed,
-            "route_id": f"ROUTE#{route_id}",
+            "pk": make_key(DRIVER_TYPENAME, username),
+            "sk": make_key(DRIVER_TYPENAME, username),
+            "gsi3pk": make_key(route_typename, route_id),
+            "gsi3sk": DRIVER_TYPENAME,
+            "route_name": route_name,
+            "route_id": route_id,
             "owner_username": username,
             "chat_id": chat_id,
             "start_time_epoch": start_time_epoch,
+            "source_geohash_close": geohash.encode(**source_location, precision=6),
+            "destination_geohash_close": geohash.encode(**destination_location, precision=6),
+            "source_geohash_mid": geohash.encode(**source_location, precision=5),
+            "destination_geohash_mid": geohash.encode(**destination_location, precision=5),
+            "source_geohash_long": geohash.encode(**source_location, precision=4),
+            "destination_geohash_long": geohash.encode(**destination_location, precision=4),
         }
     )
 
@@ -30,11 +67,12 @@ def get_user_routes(
     limit: int = 5,
     last_key: 'dict|None' = None,
 ):
+
     query_args = {
         "KeyConditionExpression": (
-            Key('owner_username').eq(username)
+            Key('pk').eq(make_key(DRIVER_TYPENAME, username))
             &
-            Key('route_id').begins_with("ROUTE")
+            Key('sk').eq(make_key(DRIVER_TYPENAME, username))
         ),
         "Limit": limit
     }
@@ -45,6 +83,55 @@ def get_user_routes(
     return response
 
 
+def get_route_by_name(username: str, route_name: str):
+    query_args = {
+        "KeyConditionExpression": (
+                Key('owner_username').eq(username)
+                &
+                Key('route_name').eq(route_name)
+        ),
+    }
+    response = table.query(
+        IndexName="gsi2",
+        **query_args
+    )
+    items = response.get('Items', [])
+    if len(items) < 1:
+        return None
+
+    return items[0]
+
+
+def get_routes_by_proximity(proximity: str, source_geohash: str, destination_geohash: str):
+    precision = map_proximity_to_precision(proximity)
+    index_name = index_name_by_precision.get(precision)
+
+    gsi_pk = f"source_geohash_{proximity}"
+    gsi_sk = f"destination_geohash_{proximity}"
+
+    query_args = {
+        "KeyConditionExpression": (
+                Key(gsi_pk).eq(source_geohash)
+                &
+                Key(gsi_sk).eq(destination_geohash)
+        ),
+    }
+    response = table.query(
+        IndexName=index_name,
+        **query_args
+    )
+    return response
+
+
+def delete_user_route(pk, sk):
+    table.delete_item(
+        Key={
+            "pk": pk,
+            "sk": sk,
+        }
+    )
+
+
 def prepare_inner_dicts_for_db(info):
     new_info = {}
     for key in info.keys():
@@ -53,3 +140,7 @@ def prepare_inner_dicts_for_db(info):
         else:
             new_info[key] = info[key]
     return new_info
+
+
+def make_key(*args):
+    return "#".join(args)

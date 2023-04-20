@@ -1,6 +1,7 @@
-import os
 import json
-from src.database.chat_state import put_chat_state
+
+from src.database.chat_state import update_chat_state
+from src.constructor.bot_response import respond_with_text
 
 
 def handler(data: dict, chat_state: dict):
@@ -9,10 +10,10 @@ def handler(data: dict, chat_state: dict):
         "active_command": "register",
         "current_step_index": 0,
         "command_info": json.dumps({}),
-        "login_timestamp": chat_state['login_timestamp'],
     }
 
-    put_chat_state(chat_id, command_state)
+    chat_state.update(command_state)
 
-    return "Please create password!"
+    update_chat_state(chat_state)
 
+    respond_with_text("Please create password!", chat_id)

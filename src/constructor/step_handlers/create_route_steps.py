@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from src.database.chat_state import update_chat_state
 from src.database.routes import put_route
+from src.constructor.bot_response import respond_with_text
 
 
 def parse_floats_to_decimals(data: dict) -> dict:
@@ -48,12 +49,14 @@ step_conf = {
 
 
 def step_handler(data, chat_state):
+    chat_id = chat_state['chat_id']
     prev_step_index = int(chat_state['current_step_index'])
 
     try:
         update_command_info = handle_prev_step_data(data, prev_step_index)
     except UserDataInvalid:
-        return "Please, adhere to the format provided!"
+        respond_with_text("Please, adhere to the format provided!", chat_id)
+        return
 
     old_command_info = json.loads(chat_state['command_info'])
     new_command_info = old_command_info | update_command_info
@@ -64,17 +67,19 @@ def step_handler(data, chat_state):
         put_route(
             username=data["message"]["from"]["username"],
             chat_id=data["message"]["chat"]["id"],
+            route_name=new_command_info["routeName"],
             route_info=parse_floats_to_decimals(new_command_info),
         )
         update_chat_state(chat_state)
         step_name = create_route_sequence[prev_step_index]
-        return step_conf[step_name]["bot_response_message"]
+        respond_with_text(step_conf[step_name]["bot_response_message"], chat_id)
+        return
 
     chat_state["current_step_index"] = prev_step_index + 1
     update_chat_state(chat_state)
 
     step_name = create_route_sequence[prev_step_index]
-    return step_conf[step_name]["bot_response_message"]
+    respond_with_text(step_conf[step_name]["bot_response_message"], chat_id)
 
 
 def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
@@ -101,8 +106,8 @@ def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
         "maxPassengerCapacity": int
     }
 
-    if converter := converter_by_key.get(key):
-        data["message"][tg_message_lookup_key] = converter(data["message"][tg_message_lookup_key])
+    if formatter := converter_by_key.get(key):
+        data["message"][tg_message_lookup_key] = formatter(data["message"][tg_message_lookup_key])
 
     update_command_info = {
         key: data["message"][tg_message_lookup_key]

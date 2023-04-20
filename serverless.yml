@@ -105,18 +105,40 @@ resources:
     RoutesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: routes-table
+        TableName: routes-table-v2
         AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
           - AttributeName: owner_username
             AttributeType: S
           - AttributeName: route_id
             AttributeType: S
           - AttributeName: chat_id
             AttributeType: N
+          - AttributeName: route_name
+            AttributeType: S
+          - AttributeName: source_geohash_close
+            AttributeType: S
+          - AttributeName: destination_geohash_close
+            AttributeType: S
+          - AttributeName: source_geohash_mid
+            AttributeType: S
+          - AttributeName: destination_geohash_mid
+            AttributeType: S
+          - AttributeName: source_geohash_long
+            AttributeType: S
+          - AttributeName: destination_geohash_long
+            AttributeType: S
+          - AttributeName: gsi3pk
+            AttributeType: S
+          - AttributeName: gsi3sk
+            AttributeType: S
         KeySchema:
-          - AttributeName: owner_username
+          - AttributeName: pk
             KeyType: HASH
-          - AttributeName: route_id
+          - AttributeName: sk
             KeyType: RANGE
         GlobalSecondaryIndexes:
           - IndexName: gsi1
@@ -127,4 +149,45 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: 'ALL'
+          - IndexName: gsi2
+            KeySchema:
+              - AttributeName: route_name
+                KeyType: HASH
+              - AttributeName: owner_username
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+          - IndexName: gsi3
+            KeySchema:
+              - AttributeName: gsi3pk
+                KeyType: HASH
+              - AttributeName: gsi3sk
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+          - IndexName: close_range_routes_geohash
+            KeySchema:
+              - AttributeName: source_geohash_close
+                KeyType: HASH
+              - AttributeName: destination_geohash_close
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+          - IndexName: mid_range_routes_geohash
+            KeySchema:
+              - AttributeName: source_geohash_mid
+                KeyType: HASH
+              - AttributeName: destination_geohash_mid
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+          - IndexName: long_range_routes_geohash
+            KeySchema:
+              - AttributeName: source_geohash_long
+                KeyType: HASH
+              - AttributeName: destination_geohash_long
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+
         BillingMode: PAY_PER_REQUEST

@@ -1,6 +1,6 @@
 import json
 
-from src.constructor.command_handlers.show_routes_command import build_navigation_buttons, build_single_route_button
+from src.constructor.services.tg_keyboard import build_navigation_buttons, build_single_route_button
 from src.database.routes import get_user_routes
 from src.database.chat_state import update_chat_state
 from src.constructor.bot_response import update_inline_keyboard
@@ -62,11 +62,6 @@ def handler(keyboard_id, callback_query, chat_state):
 
         chat_state.update({"global_keyboards_info": json.dumps(global_keyboards_info)})
         update_chat_state(chat_state)
-
-    else:
-        return ""
-
-    return ""
 
 
 def build_keyboard(items, nav_buttons_definition):

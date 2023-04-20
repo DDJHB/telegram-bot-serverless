@@ -6,6 +6,7 @@ import re
 from src.constructor.web3_utils import get_base_wallet_info, send_transaction_to_contract, call_view_contract_method
 from src.database.chat_state import update_chat_state
 from src.database.eth_transactions import put_transaction_request
+from src.constructor.bot_response import respond_with_text
 
 update_sequence = [
     "oldPassword", "newPassword",
@@ -21,36 +22,41 @@ step_conf = {
 }
 
 
-def step_handler(data, state_record):
-    prev_step_index = int(state_record['current_step_index'])
+def step_handler(data, chat_state):
+    chat_id = chat_state["chat_id"]
+    prev_step_index = int(chat_state['current_step_index'])
 
     try:
         update_command_info = handle_prev_step_data(data, prev_step_index)
     except UserDataInvalid as error:
-        return "Please, adhere to the format provided!"
+        respond_with_text("Please, adhere to the format provided!", chat_id)
+        return
 
-    old_command_info = json.loads(state_record['command_info'])
+    old_command_info = json.loads(chat_state['command_info'])
     new_command_info = old_command_info | update_command_info
-    state_record["command_info"] = json.dumps(new_command_info)
+    chat_state["command_info"] = json.dumps(new_command_info)
 
     if prev_step_index == 0:
-        if not check_password(username=data["message"]["chat"]["username"],
-                              password=state_record['command_info']['oldPassword']):
-            return "User password is not correct."
+        if not check_password(
+            username=data["message"]["chat"]["username"],
+            password=chat_state['command_info']['oldPassword']
+        ):
+            respond_with_text("User password is not correct.", chat_id)
+            return
 
     else:
         update_user(
             username=data["message"]["chat"]["username"],
-            password=state_record['command_info']['newPassword'],
+            password=chat_state['command_info']['newPassword'],
             chat_id=data["message"]["chat"]["id"],
         )
-        state_record["active_command"] = None
+        chat_state["active_command"] = None
 
-    state_record["current_step_index"] = prev_step_index + 1
-    update_chat_state(state_record)
+    chat_state["current_step_index"] = prev_step_index + 1
+    update_chat_state(chat_state)
 
     step_name = update_sequence[prev_step_index]
-    return step_conf[step_name]["bot_response_message"]
+    respond_with_text(step_conf[step_name]["bot_response_message"], chat_id)
 
 
 def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
