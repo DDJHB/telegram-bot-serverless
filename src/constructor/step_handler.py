@@ -3,7 +3,8 @@ from src.database.chat_state import get_chat_state
 from src.constructor.step_handlers import (
     create_route_steps,
     register_steps,
-    update_password_steps
+    update_password_steps,
+    add_vehicle_steps,
     delete_route_steps,
     search_routes_steps,
 )
@@ -32,5 +33,6 @@ def map_active_command_to_handler(active_command: str):
         "createRoute": create_route_steps,
         "register": register_steps,
         "updatePassword": update_password_steps,
+        "addVehicle": add_vehicle_steps,
     }
     return mapped_handlers.get(active_command)
