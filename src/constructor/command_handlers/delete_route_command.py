@@ -1,8 +1,8 @@
 import json
 
 from src.constructor.bot_response import respond_with_text, respond_with_inline_keyboard
-from src.constructor.services.tg_keyboard import build_view_keyboard, extend_keyboard_with_modify_buttons
-from src.database.chat_state import update_chat_state, get_chat_state
+from src.constructor.services.tg_keyboard import build_view_keyboard, extend_keyboard_with_route_id_buttons
+from src.database.chat_state import update_chat_state
 from src.database.routes import get_user_routes
 
 
@@ -10,11 +10,11 @@ def handler(data: dict, chat_state: dict):
     chat_id = data["message"]["chat"]["id"]
     username = data['message']['from']['username']
 
-    respond_with_text("Type in the route name you want to delete! See below for your routes.", chat_id)
+    respond_with_text("Select route number below", chat_id)
 
     response = get_user_routes(username)
     routes = response['Items']
-    keyboard_def = extend_keyboard_with_modify_buttons(build_view_keyboard(routes), len(routes))
+    keyboard_def = extend_keyboard_with_route_id_buttons(build_view_keyboard(routes), routes)
     tg_response = respond_with_inline_keyboard(
         parent_message="Your routes:",
         keyboard_definition=keyboard_def,

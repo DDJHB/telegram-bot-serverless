@@ -1,5 +1,9 @@
 import json
 
+from src.database.routes import get_user_routes
+from src.database.chat_state import update_chat_state
+from src.constructor.bot_response import update_inline_keyboard
+
 
 def build_view_keyboard(items: list[dict]) -> dict:
     inline_keyboard = [build_navigation_buttons()]
@@ -11,18 +15,21 @@ def build_view_keyboard(items: list[dict]) -> dict:
     }
 
 
-def extend_keyboard_with_modify_buttons(keyboard_definition, n_rows) -> dict:
+def extend_keyboard_with_route_id_buttons(keyboard_definition, routes) -> dict:
     keyboard_list = keyboard_definition["inline_keyboard"]
-    for index in range(n_rows):
-        keyboard_list.append(build_single_indexed_button(index))
+    index_buttons_rows = []
+    for index, route in enumerate(routes):
+        route_id = route["route_id"]
+        index_buttons_rows.append(build_single_indexed_route_button(route_id, index))
 
+    keyboard_list.append(index_buttons_rows)
     return {
         "inline_keyboard": keyboard_list
     }
 
 
-def build_single_indexed_button(index: int) -> list[dict]:
-    return [{"text": str(index), "callback_data": str(index)}]
+def build_single_indexed_route_button(route_id: str, index: int) -> dict:
+    return {"text": str(index + 1), "callback_data": route_id}
 
 
 def build_single_route_button(route_info: dict) -> list[dict]:
@@ -53,3 +60,58 @@ def construct_google_maps_url(route_info: dict):
     url = base_url + origin + destination + travel_mode
     return url
 
+
+def handle_navigation_buttons(keyboard_id, callback_query, chat_state):
+    button_name = callback_query["data"]
+    username = callback_query["from"]["username"]
+    chat_id = callback_query["message"]["chat"]["id"]
+
+    global_keyboards_info = json.loads(chat_state.get("global_keyboards_info") or '{}')
+    keyboard_info = global_keyboards_info[keyboard_id]
+
+    if button_name == "next":
+        page_info = keyboard_info["page_info"]
+        current_page_number = page_info["current_page_number"]
+        last_evaluated_key = page_info["last_evaluated_keys"][str(current_page_number)]
+
+        response = get_user_routes(username, limit=5, last_key=last_evaluated_key)
+        items = response['Items']
+
+        # TODO MOVE DOWN U STUPID MORON
+        keyboard_definition = build_view_keyboard(items)
+        update_inline_keyboard(chat_id, keyboard_id, keyboard_definition)
+
+        new_last_evaluated_key = response.get('LastEvaluatedKey')
+        new_page_number = current_page_number + 1
+
+        page_info["last_evaluated_keys"][str(new_page_number)] = new_last_evaluated_key
+        page_info["current_page_number"] = new_page_number
+        global_keyboards_info[keyboard_id].update({"page_info": page_info})
+
+        chat_state.update({"global_keyboards_info": json.dumps(global_keyboards_info)})
+        update_chat_state(chat_state)
+
+    elif button_name == "back":
+        page_info = keyboard_info["page_info"]
+        current_page_number = page_info["current_page_number"]
+        if current_page_number == 1:
+            return ""
+
+        needed_page_number = current_page_number - 2
+
+        needed_page_le_key = page_info["last_evaluated_keys"].get(str(needed_page_number))
+        response = get_user_routes(username, limit=5, last_key=needed_page_le_key)
+        items = response['Items']
+
+        keyboard_definition = build_view_keyboard(items)
+        update_inline_keyboard(chat_id, keyboard_id, keyboard_definition)
+
+        new_last_evaluated_key = response.get('LastEvaluatedKey')
+        new_page_number = current_page_number - 1
+
+        page_info["last_evaluated_keys"][str(new_page_number)] = new_last_evaluated_key
+        page_info["current_page_number"] = new_page_number
+        global_keyboards_info[keyboard_id].update({"page_info": page_info})
+
+        chat_state.update({"global_keyboards_info": json.dumps(global_keyboards_info)})
+        update_chat_state(chat_state)
