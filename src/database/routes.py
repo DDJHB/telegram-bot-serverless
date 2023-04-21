@@ -11,6 +11,7 @@ resource = boto3.resource('dynamodb')
 table = resource.Table('routes-table-v2')
 
 DRIVER_TYPENAME = "DRIVER"
+ROUTE_TYPENAME = "ROUTE"
 
 index_name_by_precision = {
     6: "close_range_routes_geohash",
@@ -32,21 +33,30 @@ def map_proximity_to_precision(proximity: str) -> int:
     return precision
 
 
+def get_route_by_id(route_id: str):
+    response = table.get_item(
+        Key={
+            'pk': make_key(ROUTE_TYPENAME, route_id),
+            'sk': DRIVER_TYPENAME,
+        }
+    )
+    return response.get('Item')
+
+
 def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
     route_id = str(uuid4())
     source_location = route_info['sourceLocation']
     destination_location = route_info['destinationLocation']
-    route_typename = "ROUTE"
 
     route_info_fixed = prepare_inner_dicts_for_db(route_info)
     start_time_epoch = int(datetime.strptime(route_info["rideStartTime"],"%d.%m.%Y %H:%M").timestamp())
     table.put_item(
         Item={
             **route_info_fixed,
-            "pk": make_key(DRIVER_TYPENAME, username),
-            "sk": make_key(DRIVER_TYPENAME, username),
-            "gsi3pk": make_key(route_typename, route_id),
-            "gsi3sk": DRIVER_TYPENAME,
+            "pk": make_key(ROUTE_TYPENAME, route_id),
+            "sk": DRIVER_TYPENAME,
+            "gsi3pk": make_key(DRIVER_TYPENAME, username),
+            "gsi3sk": make_key(DRIVER_TYPENAME, username),
             "route_name": route_name,
             "route_id": route_id,
             "owner_username": username,
@@ -70,16 +80,16 @@ def get_user_routes(
 
     query_args = {
         "KeyConditionExpression": (
-            Key('pk').eq(make_key(DRIVER_TYPENAME, username))
+            Key('gsi3pk').eq(make_key(DRIVER_TYPENAME, username))
             &
-            Key('sk').eq(make_key(DRIVER_TYPENAME, username))
+            Key('gsi3sk').eq(make_key(DRIVER_TYPENAME, username))
         ),
-        "Limit": limit
+        "Limit": limit,
     }
     if last_key:
         query_args.update({"ExclusiveStartKey": last_key})
 
-    response = table.query(**query_args)
+    response = table.query(**query_args, IndexName="gsi3")
     return response
 
 
