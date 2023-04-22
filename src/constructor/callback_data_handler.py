@@ -1,12 +1,13 @@
 import json
 
 from src.constructor.keyboard_handlers import (
-    routes_keyboard, delete_route_keyboard,
+    routes_keyboard, delete_route_keyboard, delete_vehicle_keyboard,
 )
 
 keyboard_by_name = {
     "routes_keyboard": routes_keyboard,
     "delete_route_keyboard": delete_route_keyboard,
+    "delete_vehicle_keyboard": delete_vehicle_keyboard,
 }
 
 

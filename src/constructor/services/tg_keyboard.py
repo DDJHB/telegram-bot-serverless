@@ -28,12 +28,26 @@ def extend_keyboard_with_route_id_buttons(keyboard_definition, routes) -> dict:
     }
 
 
+def build_indexed_keyboard(items: list) -> dict:
+    inline_keyboard = []
+    for index, item in enumerate(items):
+        inline_keyboard.append(build_indexed_button(item, index))
+
+    return {
+        "inline_keyboard": inline_keyboard
+    }
+
+
 def build_single_indexed_route_button(route_id: str, index: int) -> dict:
     return {"text": str(index + 1), "callback_data": route_id}
 
 
 def build_single_route_button(route_info: dict) -> list[dict]:
     return [{"text": route_info.get("routeName", "random"), "url": construct_google_maps_url(route_info)}]
+
+
+def build_indexed_button(item: str, index: int) -> list[dict]:
+    return [{"text": item, "callback_data": index}]
 
 
 def build_navigation_buttons() -> list[dict]:

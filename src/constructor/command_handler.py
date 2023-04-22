@@ -9,7 +9,7 @@ from src.constructor.command_handlers import (
 
 # vehicle commands
 from src.constructor.command_handlers import (
-    add_vehicle_command, show_vehicles_command
+    add_vehicle_command, show_vehicles_command, delete_vehicle_command,
 )
 
 map_command_to_handler = {
@@ -21,8 +21,9 @@ map_command_to_handler = {
     "/showMyRoutes": show_routes_command,
     "/deleteRoute": delete_route_command,
     "/searchRoutes": search_routes_command,
+    "/showVehicles": show_vehicles_command,
     "/addVehicle": add_vehicle_command,
-    "/showVehicles": show_vehicles_command
+    "/deleteVehicle": delete_vehicle_command,
 }
 
 
