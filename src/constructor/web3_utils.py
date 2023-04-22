@@ -82,10 +82,10 @@ def process_tx_hash(tx_hash: str, contract_name: str, function_name: str) -> dic
     receipt = w3.eth.wait_for_transaction_receipt(tx_hash_encoded)
 
     event_processing_functions = {
-        "registerUser": contract.events.RegistrationInfo().processReceipt,
-        "deposit": contract.events.Deposit().processReceipt,
-        "processPayment": contract.events.Transfer().processReceipt,
-        "withdraw": contract.events.Withdraw().processReceipt,
+        "registerUser": contract.events.RegistrationInfo,
+        "deposit": contract.events.Deposit,
+        "processPayment": contract.events.Transfer,
+        "withdraw": contract.events.Withdraw,
     }
 
-    return event_processing_functions[function_name](receipt)
+    return event_processing_functions[function_name]().processReceipt(receipt)
