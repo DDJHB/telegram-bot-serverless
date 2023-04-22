@@ -54,7 +54,7 @@ def step_handler(data, state_record):
 
 
 def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
-    key = step_conf[prev_step_index]
+    key = vehicle_register_sequence[prev_step_index]
     validator_by_key = {
         "license": validate_license,
         "model": True,
