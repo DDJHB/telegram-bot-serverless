@@ -48,8 +48,8 @@ def send_transaction_to_contract(wallet_info: dict, contract_name: str, function
 
     tx_params = {
         'from': wallet_info['wallet_address'],
-        'gas': 200000,
-        'gasPrice': w3.toWei('200', 'gwei'),
+        'gas': 500000,
+        'gasPrice': w3.toWei('5000', 'wei'),
         'nonce': nonce
     }
 
