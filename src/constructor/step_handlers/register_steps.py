@@ -5,7 +5,7 @@ import re
 from src.constructor.web3_utils import get_base_wallet_info, send_transaction_to_contract
 from src.database.chat_state import update_chat_state
 from src.database.eth_transactions import put_transaction_request
-from src.database.user_info import put_wallet_info_record
+from src.database.user_info import put_wallet_info_record, get_wallet_info_record
 
 register_sequence = [
     "password", "walletAddress", "privateKey"
@@ -107,8 +107,7 @@ def register_user(username: str, password: str, chat_id: int):
     function_name = "registerUser"
     contract_name = "onboarding"
 
-    #TODO change to user wallet
-    wallet_info = get_base_wallet_info()
+    wallet_info = get_wallet_info_record(username)
 
     tx_hash = send_transaction_to_contract(
         wallet_info=wallet_info,

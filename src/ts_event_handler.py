@@ -19,7 +19,7 @@ def handler(event, context):
         logs = process_tx_hash(
             tx_hash=tx_hash,
             contract_name=transaction_data['contract_name'],
-            function_name=function_name
+            function_name=function_name,
         )
 
         if logs[0]['args'].get('status') is not None:

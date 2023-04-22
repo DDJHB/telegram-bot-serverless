@@ -3,10 +3,11 @@ import web3.exceptions
 from web3 import Web3
 import re
 
-from src.constructor.web3_utils import get_base_wallet_info, send_transaction_to_contract, call_view_contract_method
+from src.constructor.web3_utils import send_transaction_to_contract, call_view_contract_method
 from src.database.chat_state import update_chat_state
 from src.database.eth_transactions import put_transaction_request
 from src.constructor.bot_response import respond_with_text
+from src.database.user_info import get_wallet_info_record
 
 update_sequence = [
     "oldPassword", "newPassword",
@@ -39,7 +40,7 @@ def step_handler(data, chat_state):
     if prev_step_index == 0:
         if not check_password(
             username=data["message"]["chat"]["username"],
-            password=chat_state['command_info']['oldPassword']
+            password=json.loads(chat_state['command_info'])['oldPassword']
         ):
             respond_with_text("User password is not correct.", chat_id)
             return
@@ -47,7 +48,7 @@ def step_handler(data, chat_state):
     else:
         update_user(
             username=data["message"]["chat"]["username"],
-            password=chat_state['command_info']['newPassword'],
+            password=json.loads(chat_state['command_info'])['newPassword'],
             chat_id=data["message"]["chat"]["id"],
         )
         chat_state["active_command"] = None
@@ -115,11 +116,8 @@ def check_password(username: str, password: str):
 def update_user(username: str, password: str, chat_id: int):
     function_name = "updatePassword"
     contract_name = "onboarding"
-    function_args = {
-        "username": username,
-        "password": Web3.keccak(text=password),
-    }
-    wallet_info = get_base_wallet_info()
+
+    wallet_info = get_wallet_info_record(username)
 
     tx_hash = send_transaction_to_contract(
         wallet_info=wallet_info,
@@ -136,6 +134,6 @@ def update_user(username: str, password: str, chat_id: int):
             "username": username,
             "function_name": function_name,
             "contract_name": contract_name,
-            "function_args": json.dumps(function_args),
+            "function_args": json.dumps({}),
         }
     )
