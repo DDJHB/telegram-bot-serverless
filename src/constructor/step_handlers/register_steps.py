@@ -28,7 +28,7 @@ def step_handler(data, state_record):
     prev_step_index = int(state_record['current_step_index'])
 
     try:
-        update_command_info = handle_prev_step_data(data, prev_step_index)
+        update_command_info = handle_prev_step_data(data, prev_step_index, state_record)
     except UserDataInvalid as error:
         return "Please, adhere to the format provided!"
 
@@ -39,13 +39,13 @@ def step_handler(data, state_record):
     if prev_step_index == len(register_sequence) - 1:
         put_wallet_info_record(
             username=data["message"]["chat"]["username"],
-            wallet_address=state_record['command_info']['wallet_address'],
-            private_key=state_record['command_info']['private_key'],
+            wallet_address=json.loads(state_record['command_info'])['walletAddress'],
+            private_key=json.loads(state_record['command_info'])['privateKey'],
             extra_fields={}
         )
         register_user(
             username=data["message"]["chat"]["username"],
-            password=state_record['command_info']['password'],
+            password=json.loads(state_record['command_info'])['password'],
             chat_id=data["message"]["chat"]["id"],
         )
 
@@ -58,8 +58,8 @@ def step_handler(data, state_record):
     return step_conf[step_name]["bot_response_message"]
 
 
-def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
-    key = step_conf[prev_step_index]
+def handle_prev_step_data(data: dict, prev_step_index: int, chat_state: dict) -> dict:
+    key = register_sequence[prev_step_index]
     validator_by_key = {
         "password": validate_password,
         "walletAddress": validate_wallet_address,
@@ -67,7 +67,7 @@ def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
     }
     key_validator = validator_by_key[key]
     try:
-        is_valid = key_validator(data["message"]['text'])
+        is_valid = key_validator(data["message"]['text'], chat_state)
         if not is_valid:
             raise UserDataInvalid
     except KeyError as error:
@@ -79,7 +79,7 @@ def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
     return update_command_info
 
 
-def validate_password(password: str):
+def validate_password(password: str, chat_state: dict):
     if len(password) < 8 or len(password) > 24:
         return False
     if not re.search(r"[A-Z]", password):
@@ -89,11 +89,12 @@ def validate_password(password: str):
     return True
 
 
-def validate_wallet_address(wallet_address):
+def validate_wallet_address(wallet_address, chat_state):
     return Web3.isAddress(wallet_address)
 
 
-def validate_private_key(private_key, wallet_address):
+def validate_private_key(private_key, chat_state):
+    wallet_address = json.loads(chat_state.get("command_info", '{}')).get("walletAddress")
     account = Account.privateKeyToAccount(private_key)
     return account.address.lower() == wallet_address.lower()
 
@@ -105,10 +106,7 @@ class UserDataInvalid(Exception):
 def register_user(username: str, password: str, chat_id: int):
     function_name = "registerUser"
     contract_name = "onboarding"
-    function_args = {
-        "username": username,
-        "password": Web3.keccak(text=password),
-    }
+
     #TODO change to user wallet
     wallet_info = get_base_wallet_info()
 
@@ -127,6 +125,6 @@ def register_user(username: str, password: str, chat_id: int):
             "username": username,
             "function_name": function_name,
             "contract_name": contract_name,
-            "function_args": json.dumps(function_args),
+            "function_args": json.dumps({}),
         }
     )

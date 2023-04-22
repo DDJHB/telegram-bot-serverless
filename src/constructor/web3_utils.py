@@ -9,10 +9,12 @@ onboarding_contract_address = os.getenv("ONBOARDING_CONTRACT_ADDRESS")
 payment_contract_address = os.getenv("PAYMENT_CONTRACT_ADDRESS")
 private_key = os.getenv("WALLET_PRIVATE_KEY")
 wallet_address = os.getenv("WALLET_ADDRESS")
+car_contract_address = os.getenv("CAR_MANAGEMENT_SERVICE_ADDRESS")
 
 contract_addresses = {
     "onboarding": onboarding_contract_address,
-    "payment": payment_contract_address
+    "payment": payment_contract_address,
+    "car": car_contract_address,
 }
 
 
