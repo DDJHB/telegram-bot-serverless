@@ -12,7 +12,7 @@ from src.constructor.bot_response import respond_with_text
 
 def handle_step(data: dict, chat_state: dict):
     chat_id = chat_state["chat_id"]
-    if not chat_state or not chat_state['active_command']:
+    if not chat_state or not chat_state.get('active_command'):
         respond_with_text("Please, enter a command first!", chat_id)
         return
 

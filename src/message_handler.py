@@ -2,6 +2,7 @@ import time
 from http import HTTPStatus
 import traceback
 import enum
+import decimal
 
 import requests
 
@@ -22,13 +23,13 @@ def handler(event, context):
         chat_id = extract_chat_id(data)
         chat_state = get_chat_state(chat_id)
         if not chat_state:
-            put_chat_state(chat_id, {"login_timestamp": 0.0})
+            put_chat_state(chat_id, {"login_timestamp": decimal.Decimal(1.0)})
 
         chat_state = get_chat_state(chat_id)  # TODO optimize
 
         error = handle_session_login(data, chat_state, chat_id)
         if error == UserMessageErrors.UserNotSignedIn:
-            return
+            return {'statusCode': HTTPStatus.OK}
 
         if data.get("callback_query"):
             response = handle_callback_data(data, chat_state)
@@ -66,10 +67,14 @@ def handle_session_login(data, chat_state, chat_id):
     text = data.get("message", {}).get("text")
     if not text:
         return
-    if is_login_command(text) or is_start_command(text):
+    if is_login_command(text) or is_start_command(text) or is_register_command(text):
         return
+    if chat_state.get("active_command") == "register":
+        return
+    print(chat_state.get("login_timestamp"))
     if login_timestamp := chat_state.get("login_timestamp"):
-        if time.time() - login_timestamp > day_in_seconds:
+        print(time.time() - float(login_timestamp))
+        if time.time() - float(login_timestamp) > day_in_seconds:
             respond_with_text("Please log in to continue...", chat_id)
             return UserMessageErrors.UserNotSignedIn
 
@@ -80,6 +85,10 @@ def is_login_command(text):
 
 def is_start_command(text):
     return text.startswith("/start")
+
+
+def is_register_command(text):
+    return text.startswith("/register")
 
 
 class UserMessageErrors(enum.IntEnum):
