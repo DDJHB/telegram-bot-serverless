@@ -1,55 +1,73 @@
 import json
-from web3 import Web3
+from web3 import Web3, Account
 import re
 
 from src.constructor.web3_utils import get_base_wallet_info, send_transaction_to_contract
 from src.database.chat_state import update_chat_state
 from src.database.eth_transactions import put_transaction_request
-from src.constructor.bot_response import respond_with_text
+from src.database.user_info import put_wallet_info_record
 
 register_sequence = [
-    "password",
+    "password", "walletAddress", "privateKey"
 ]
 
 step_conf = {
     "password": {
+        "bot_response_message": "Please enter you Metamask wallet address!"
+    },
+    "walletAddress": {
+        "bot_response_message": "Please enter your Metamask wallet private key!"
+    },
+    "privateKey": {
         "bot_response_message": "Registering User..."
     },
 }
 
 
-def step_handler(data, chat_state):
-    chat_id = chat_state['chat_id']
-    prev_step_index = int(chat_state['current_step_index'])
+def step_handler(data, state_record):
+    prev_step_index = int(state_record['current_step_index'])
 
     try:
         update_command_info = handle_prev_step_data(data, prev_step_index)
     except UserDataInvalid as error:
-        respond_with_text("Please, adhere to the format provided!", chat_id)
-        return
+        return "Please, adhere to the format provided!"
 
-    old_command_info = json.loads(chat_state['command_info'])
+    old_command_info = json.loads(state_record['command_info'])
     new_command_info = old_command_info | update_command_info
-    chat_state["command_info"] = json.dumps(new_command_info)
+    state_record["command_info"] = json.dumps(new_command_info)
 
-    register_user(
-        username=data["message"]["chat"]["username"],
-        password=chat_state['command_info']['password'],
-        chat_id=data["message"]["chat"]["id"],
-    )
+    if prev_step_index == len(register_sequence) - 1:
+        put_wallet_info_record(
+            username=data["message"]["chat"]["username"],
+            wallet_address=state_record['command_info']['wallet_address'],
+            private_key=state_record['command_info']['private_key'],
+            extra_fields={}
+        )
+        register_user(
+            username=data["message"]["chat"]["username"],
+            password=state_record['command_info']['password'],
+            chat_id=data["message"]["chat"]["id"],
+        )
 
-    chat_state["active_command"] = None
-    chat_state["current_step_index"] = prev_step_index + 1
-    update_chat_state(chat_state)
+        state_record["active_command"] = None
+
+    state_record["current_step_index"] = prev_step_index + 1
+    update_chat_state(state_record)
 
     step_name = register_sequence[prev_step_index]
-    respond_with_text(step_conf[step_name]["bot_response_message"], chat_id)
+    return step_conf[step_name]["bot_response_message"]
 
 
 def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
-    key = register_sequence[prev_step_index]
+    key = step_conf[prev_step_index]
+    validator_by_key = {
+        "password": validate_password,
+        "walletAddress": validate_wallet_address,
+        "privateKey": validate_private_key,
+    }
+    key_validator = validator_by_key[key]
     try:
-        is_valid = validate_password(data["message"]['text'])
+        is_valid = key_validator(data["message"]['text'])
         if not is_valid:
             raise UserDataInvalid
     except KeyError as error:
@@ -71,6 +89,15 @@ def validate_password(password: str):
     return True
 
 
+def validate_wallet_address(wallet_address):
+    return Web3.isAddress(wallet_address)
+
+
+def validate_private_key(private_key, wallet_address):
+    account = Account.privateKeyToAccount(private_key)
+    return account.address.lower() == wallet_address.lower()
+
+
 class UserDataInvalid(Exception):
     ...
 
@@ -82,6 +109,7 @@ def register_user(username: str, password: str, chat_id: int):
         "username": username,
         "password": Web3.keccak(text=password),
     }
+    #TODO change to user wallet
     wallet_info = get_base_wallet_info()
 
     tx_hash = send_transaction_to_contract(
