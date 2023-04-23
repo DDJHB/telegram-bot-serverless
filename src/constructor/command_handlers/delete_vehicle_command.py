@@ -28,7 +28,7 @@ def handler(data: dict, chat_state: dict):
     global_keyboards_info.update(
         {
             keyboard_id: {
-                "keyboard_name": "delete_route_keyboard",
+                "keyboard_name": "delete_vehicle_keyboard",
             }
         }
     )

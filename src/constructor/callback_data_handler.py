@@ -1,8 +1,8 @@
 import json
 
 from src.constructor.keyboard_handlers import (
-    routes_keyboard, delete_route_keyboard, delete_vehicle_keyboard,
-    routes_keyboard, delete_route_keyboard, start_route_keyboard,
+    delete_vehicle_keyboard, routes_keyboard,
+    delete_route_keyboard, start_route_keyboard,
     approve_start_route_keyboard, join_route_keyboard
 )
 
