@@ -20,6 +20,7 @@ def handler(keyboard_id, callback_query, chat_state):
 
     if not can_join:
         respond_with_text(error_message, chat_id)
+        return
 
     route.update({"joined_users_count": route["joined_users_count"] + 1})
     update_route(route)
@@ -41,7 +42,7 @@ def validate_user_against_route(username, chat_id, route):
         return False, "Unfortunately, this route has reached its maximum passenger capacity"
 
     already_joined = passenger_route_exists(username, route['route_id'])
-    if not already_joined:
+    if already_joined:
         return False, "User has already joined this route previously"
 
     return True, ""
