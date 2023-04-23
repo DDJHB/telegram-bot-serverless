@@ -4,6 +4,7 @@ from src.constructor.step_handlers import (
     create_route_steps,
     register_steps,
     update_password_steps,
+    update_wallet_info_steps,
     add_vehicle_steps,
     delete_route_steps,
     join_route_steps,
@@ -33,6 +34,7 @@ def map_active_command_to_handler(active_command: str):
         "createRoute": create_route_steps,
         "register": register_steps,
         "updatePassword": update_password_steps,
+        "updateWalletInfo": update_wallet_info_steps,
         "addVehicle": add_vehicle_steps,
     }
     return mapped_handlers.get(active_command)
