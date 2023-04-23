@@ -47,11 +47,13 @@ def get_route_by_id_and_username(route_id: str, username: str):
 def get_route_by_id(route_id: str):
     query_args = {
         "KeyConditionExpression": (
-                Key('gsi4pk').eq(make_key(ROUTE_TYPENAME, route_id))
+                Key('pk').eq(make_key(ROUTE_TYPENAME, route_id))
+                &
+                Key('sk').begins_with(DRIVER_TYPENAME)
         ),
     }
 
-    response = table.query(**query_args, IndexName="gsi4")
+    response = table.query(**query_args)
     items = response['Items']
     if len(items) < 1:
         return None
@@ -96,6 +98,7 @@ def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
             "route_name": route_name,
             "route_id": route_id,
             "owner_username": username,
+            "owner_chat_id": chat_id,
             "chat_id": chat_id,
             "start_time_epoch": start_time_epoch,
             "source_geohash_close": geohash.encode(**source_location, precision=6),

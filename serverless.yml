@@ -175,12 +175,6 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: 'ALL'
-          - IndexName: gsi4
-            KeySchema:
-              - AttributeName: gsi4pk
-                KeyType: HASH
-            Projection:
-              ProjectionType: 'ALL'
           - IndexName: close_range_routes_geohash
             KeySchema:
               - AttributeName: source_geohash_close
