@@ -13,6 +13,9 @@ def handler(data: dict, chat_state: dict):
     respond_with_text("Select a vehicle you want to remove:", chat_id)
 
     vehicles = get_user_vehicles(username)
+    if len(vehicles) == 0:
+        respond_with_text("You have no registered vehicles!", chat_id)
+        return
 
     licenses = [v[0] for v in vehicles]
 
