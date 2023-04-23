@@ -17,11 +17,23 @@ def handler(data: dict, chat_state: dict):
     licenses = [v[0] for v in vehicles]
 
     keyboard_def = build_indexed_keyboard(licenses)
-    respond_with_inline_keyboard(
+    tg_response = respond_with_inline_keyboard(
         parent_message="Your vehicles:",
         keyboard_definition=keyboard_def,
         chat_id=chat_id,
     )
+
+    keyboard_id = str(tg_response.json()['result']["message_id"])
+    global_keyboards_info = json.loads(chat_state.get("global_keyboards_info") or '{}')
+    global_keyboards_info.update(
+        {
+            keyboard_id: {
+                "keyboard_name": "delete_route_keyboard",
+            }
+        }
+    )
+
+    chat_state.update({"global_keyboards_info": json.dumps(global_keyboards_info)})
 
     command_state = {
         "active_command": "deleteVehicle",
