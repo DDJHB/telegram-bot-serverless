@@ -7,7 +7,7 @@ def handler(data: dict, chat_state: dict):
     username = data['message']['from']['username']
     vehicles = get_user_vehicles(username)
 
-    response = ""
+    response = "" if len(vehicles) else "You have no registered vehicles!"
     for ind, vehicle in enumerate(vehicles):
         response += f"{ind+1}. {vehicle[0]}, {vehicle[1]}, {vehicle[2]}, {vehicle[3]}\n"
 

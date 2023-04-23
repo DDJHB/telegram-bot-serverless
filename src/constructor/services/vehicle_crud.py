@@ -5,11 +5,11 @@ from src.constructor.services.vehicle import Vehicle
 from src.database.eth_transactions import put_transaction_request
 from src.database.user_info import get_wallet_info_record
 
-contract_name = "car"
+contract_name = "vehicle"
 
 
 def get_user_vehicles(username: str):
-    function_name = "getUserCars"
+    function_name = "getUserVehicles"
 
     response = call_view_contract_method(
         contract_name=contract_name,
@@ -21,7 +21,7 @@ def get_user_vehicles(username: str):
 
 
 def get_user_vehicle(username: str, index: int):
-    function_name = "getUserCar"
+    function_name = "getUserVehicle"
 
     response = call_view_contract_method(
         contract_name=contract_name,
@@ -33,7 +33,7 @@ def get_user_vehicle(username: str, index: int):
 
 
 def add_user_vehicle(username: str, vehicle: Vehicle, chat_id: int):
-    function_name = "addCar"
+    function_name = "addVehicle"
     vehicle_tuple = vehicle.get_tuple()
 
     wallet_info = get_wallet_info_record(username)
@@ -59,7 +59,7 @@ def add_user_vehicle(username: str, vehicle: Vehicle, chat_id: int):
 
 
 def update_user_vehicle(username: str, index: int, vehicle: Vehicle, chat_id: int):
-    function_name = "updateCar"
+    function_name = "updateVehicle"
     vehicle_tuple = vehicle.get_tuple()
 
     wallet_info = get_wallet_info_record(username=username)
@@ -85,7 +85,7 @@ def update_user_vehicle(username: str, index: int, vehicle: Vehicle, chat_id: in
 
 
 def remove_user_vehicle(username: str, index: int, vehicle: Vehicle, chat_id: int):
-    function_name = "deleteCar"
+    function_name = "deleteVehicle"
 
     wallet_info = get_wallet_info_record(username=username)
     tx_hash = send_transaction_to_contract(

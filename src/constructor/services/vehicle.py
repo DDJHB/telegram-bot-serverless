@@ -2,7 +2,7 @@ class Vehicle:
     license: str = ""
     model: str = ""
     color: str = ""
-    year: int = 0
+    year: str = ""
 
     def __init__(self, license, model, color, year):
         self.license = license
