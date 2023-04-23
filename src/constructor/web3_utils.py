@@ -22,8 +22,11 @@ event_processing = {
     "deposit": "Deposit",
     "processPayment": "Transfer",
     "withdraw": "Withdraw",
-    "updatePassword": "PasswordChangeInfo"
+    "updatePassword": "PasswordChangeInfo",
+    "addCar": "addCarInformation",
+    "deleteCar": "deleteCarInformation"
 }
+
 
 def get_base_wallet_info():
     return {
