@@ -3,7 +3,7 @@ import json
 from src.constructor.keyboard_handlers import (
     delete_vehicle_keyboard, routes_keyboard,
     delete_route_keyboard, start_route_keyboard,
-    approve_start_route_keyboard, join_route_keyboard
+    approve_start_route_keyboard, join_route_keyboard, rate_driver_keyboard
 )
 
 keyboard_by_name = {
@@ -13,6 +13,7 @@ keyboard_by_name = {
     "start_route_keyboard": start_route_keyboard,
     "approve_route_keyboard": approve_start_route_keyboard,
     "join_route_keyboard": join_route_keyboard,
+    "rate_driver_keyboard": rate_driver_keyboard,
 }
 
 

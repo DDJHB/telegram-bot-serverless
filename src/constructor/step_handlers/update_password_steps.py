@@ -7,7 +7,7 @@ from src.constructor.web3_utils import send_transaction_to_contract, call_view_c
 from src.database.chat_state import update_chat_state
 from src.database.eth_transactions import put_transaction_request
 from src.constructor.bot_response import respond_with_text
-from src.database.user_info import get_wallet_info_record
+from src.database.user_info import get_user_info_record
 
 update_sequence = [
     "oldPassword", "newPassword",
@@ -117,7 +117,7 @@ def update_user(username: str, password: str, chat_id: int):
     function_name = "updatePassword"
     contract_name = "onboarding"
 
-    wallet_info = get_wallet_info_record(username)
+    wallet_info = get_user_info_record(username)
 
     tx_hash = send_transaction_to_contract(
         wallet_info=wallet_info,

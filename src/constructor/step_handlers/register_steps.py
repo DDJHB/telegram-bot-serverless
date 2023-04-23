@@ -2,10 +2,10 @@ import json
 from web3 import Web3, Account
 import re
 
-from src.constructor.web3_utils import get_base_wallet_info, send_transaction_to_contract
+from src.constructor.web3_utils import send_transaction_to_contract
 from src.database.chat_state import update_chat_state
 from src.database.eth_transactions import put_transaction_request
-from src.database.user_info import put_wallet_info_record, get_wallet_info_record
+from src.database.user_info import put_user_info_record, get_user_info_record
 
 register_sequence = [
     "password", "walletAddress", "privateKey"
@@ -37,10 +37,12 @@ def step_handler(data, state_record):
     state_record["command_info"] = json.dumps(new_command_info)
 
     if prev_step_index == len(register_sequence) - 1:
-        put_wallet_info_record(
+        put_user_info_record(
             username=data["message"]["chat"]["username"],
             wallet_address=json.loads(state_record['command_info'])['walletAddress'],
             private_key=json.loads(state_record['command_info'])['privateKey'],
+            rating=0.0,
+            raters_num=0,
             extra_fields={}
         )
         register_user(
@@ -109,7 +111,7 @@ def register_user(username: str, password: str, chat_id: int):
     function_name = "registerUser"
     contract_name = "onboarding"
 
-    wallet_info = get_wallet_info_record(username)
+    wallet_info = get_user_info_record(username)
 
     tx_hash = send_transaction_to_contract(
         wallet_info=wallet_info,

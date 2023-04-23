@@ -2,7 +2,7 @@ import json
 from web3 import Web3, Account
 
 from src.database.chat_state import update_chat_state
-from src.database.user_info import put_wallet_info_record
+from src.database.user_info import put_user_info_record, get_user_info_record
 from src.constructor.bot_response import respond_with_text
 
 
@@ -35,10 +35,13 @@ def step_handler(data, chat_state):
     chat_state["command_info"] = json.dumps(new_command_info)
 
     if prev_step_index == len(update_sequence) - 1:
-        put_wallet_info_record(
+        cur_info = get_user_info_record(data["message"]["chat"]["username"])
+        put_user_info_record(
             username=data["message"]["chat"]["username"],
             wallet_address=json.loads(chat_state['command_info'])['newWalletAddress'],
             private_key=json.loads(chat_state['command_info'])['newPrivateKey'],
+            rating=cur_info.get('rating', 0.0),
+            raters_num=cur_info.get('raters_num', 0),
             extra_fields={}
         )
         chat_state["active_command"] = None
