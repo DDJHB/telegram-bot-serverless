@@ -87,6 +87,8 @@ def do_not_validate(dummy) -> True:
 
 
 def validate_year(year: str):
+    if not year.isnumeric():
+        return False
     year = int(year)
     current_year = datetime.datetime.now().year
     if 1950 <= year <= current_year:
