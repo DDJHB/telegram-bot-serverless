@@ -1,5 +1,6 @@
 import time
 import enum
+import decimal
 
 import web3.exceptions
 from web3 import Web3
@@ -24,7 +25,7 @@ def handler(data: dict, chat_state: dict):
         return
 
     chat_state.update({
-        'login_timestamp': time.time()
+        'login_timestamp': decimal.Decimal(time.time())
     })
     update_chat_state(chat_state)
 
