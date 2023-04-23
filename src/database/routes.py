@@ -74,6 +74,36 @@ def get_passengers_routes_by_route_id(route_id: str):
     return response
 
 
+def put_passenger_route(driver_route: dict, username: str, chat_id: int):
+    passenger_route = driver_route | {
+        "sk": make_key(PASSENGER_TYPENAME, username),
+        "gsi3pk": make_key(PASSENGER_TYPENAME, username),
+        "gsi3sk": make_key(PASSENGER_TYPENAME, username),
+        "chat_id": chat_id,
+    }
+
+    proximity_indexes_attributes = [
+        "source_geohash_close",
+        "destination_geohash_close",
+        "source_geohash_mid",
+        "destination_geohash_mid",
+        "source_geohash_long",
+        "destination_geohash_long",
+    ]
+
+    obfuscate_driver_attributes = [
+        "joined_users_count"
+    ]
+
+    for attribute in proximity_indexes_attributes:
+        passenger_route.pop(attribute)
+
+    for attribute in obfuscate_driver_attributes:
+        passenger_route.pop(attribute)
+
+    table.put_item(Item=passenger_route)
+
+
 def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
     route_id = str(uuid4())
     source_location = route_info['sourceLocation']
@@ -182,6 +212,17 @@ def delete_user_route(pk, sk):
             "sk": sk,
         }
     )
+
+
+def passenger_route_exists(username: str, route_id: str):
+    response = table.get_item(
+        Key={
+            "pk": make_key(ROUTE_TYPENAME, route_id),
+            "sk": make_key(PASSENGER_TYPENAME, username)
+        }
+    )
+
+    return response.get("Item")
 
 
 def prepare_inner_dicts_for_db(info):

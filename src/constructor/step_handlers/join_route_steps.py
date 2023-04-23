@@ -66,7 +66,7 @@ def step_handler(data, chat_state):
         global_keyboards_info.update(
             {
                 keyboard_id: {
-                    "keyboard_name": "routes_keyboard",
+                    "keyboard_name": "join_route_keyboard",
                     "page_info": {
                         "last_evaluated_keys": {str(current_page): routes_info.get('LastEvaluatedKey')},
                         "current_page_number": current_page,

@@ -12,7 +12,7 @@ keyboard_by_name = {
     "delete_vehicle_keyboard": delete_vehicle_keyboard,
     "start_route_keyboard": start_route_keyboard,
     "approve_route_keyboard": approve_start_route_keyboard,
-    "join_route_keyboard": join_route_keyboard
+    "join_route_keyboard": join_route_keyboard,
 }
 
 
