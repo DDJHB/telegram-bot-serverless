@@ -37,8 +37,8 @@ def step_handler(data, chat_state):
     if prev_step_index == len(update_sequence) - 1:
         put_wallet_info_record(
             username=data["message"]["chat"]["username"],
-            wallet_address=json.loads(chat_state['command_info'])['walletAddress'],
-            private_key=json.loads(chat_state['command_info'])['privateKey'],
+            wallet_address=json.loads(chat_state['command_info'])['newWalletAddress'],
+            private_key=json.loads(chat_state['command_info'])['newPrivateKey'],
             extra_fields={}
         )
         chat_state["active_command"] = None
