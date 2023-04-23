@@ -4,7 +4,7 @@ from src.constructor.command_handlers import (
 )
 # route commands
 from src.constructor.command_handlers import (
-    create_route_command, delete_route_command, show_routes_command, search_routes_command
+    create_route_command, delete_route_command, show_routes_command, join_route_command, start_route_command
 )
 
 # vehicle commands
@@ -21,7 +21,8 @@ map_command_to_handler = {
     "/createRoute": create_route_command,
     "/showMyRoutes": show_routes_command,
     "/deleteRoute": delete_route_command,
-    "/searchRoutes": search_routes_command,
+    "/joinRoute": join_route_command,
+    "/startRoute": start_route_command,
     "/showVehicles": show_vehicles_command,
     "/addVehicle": add_vehicle_command,
     "/deleteVehicle": delete_vehicle_command,

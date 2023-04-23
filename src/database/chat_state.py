@@ -1,5 +1,6 @@
 import boto3
 
+from boto3.dynamodb.conditions import Key
 
 resource = boto3.resource('dynamodb')
 table = resource.Table('user-chat-state-table')
@@ -28,3 +29,21 @@ def get_chat_state(chat_id: int):
     )
 
     return response.get('Item')
+
+
+def get_chat_state_by_username(username: str):
+    query_args = {
+        "KeyConditionExpression": (
+            Key('username').eq(username)
+        ),
+    }
+
+    response = table.query(
+        IndexName="gsi1",
+        **query_args
+    )
+    items = response.get('Items', [])
+    if len(items) < 1:
+        return None
+
+    return items[0]

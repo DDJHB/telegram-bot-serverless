@@ -5,7 +5,7 @@ service: carpooling-telegram-bot
 
 custom:
   pythonRequirements:
-     dockerizePip: non-linux
+    dockerizePip: non-linux
 
 provider:
   name: aws
@@ -86,9 +86,18 @@ resources:
         AttributeDefinitions:
           - AttributeName: pk   # chat_id
             AttributeType: N
+          - AttributeName: username
+            AttributeType: S
         KeySchema:
           - AttributeName: pk
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: gsi1
+            KeySchema:
+              - AttributeName: username
+                KeyType: HASH
+            Projection:
+              ProjectionType: 'ALL'
         BillingMode: PAY_PER_REQUEST
 
     UserInfoTable:
@@ -164,6 +173,12 @@ resources:
                 KeyType: HASH
               - AttributeName: gsi3sk
                 KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+          - IndexName: gsi4
+            KeySchema:
+              - AttributeName: gsi4pk
+                KeyType: HASH
             Projection:
               ProjectionType: 'ALL'
           - IndexName: close_range_routes_geohash

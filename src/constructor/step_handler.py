@@ -6,7 +6,7 @@ from src.constructor.step_handlers import (
     update_password_steps,
     add_vehicle_steps,
     delete_route_steps,
-    search_routes_steps,
+    join_route_steps,
 )
 from src.constructor.bot_response import respond_with_text
 
@@ -28,7 +28,7 @@ def handle_step(data: dict, chat_state: dict):
 
 def map_active_command_to_handler(active_command: str):
     mapped_handlers = {
-        "searchRoutes": search_routes_steps,
+        "joinRoute": join_route_steps,
         "deleteRoute": delete_route_steps,
         "createRoute": create_route_steps,
         "register": register_steps,

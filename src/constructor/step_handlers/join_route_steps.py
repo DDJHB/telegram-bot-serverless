@@ -4,10 +4,12 @@ from datetime import datetime
 from src.constructor.bot_response import respond_with_text, respond_with_inline_keyboard
 from src.database.chat_state import update_chat_state
 from src.constructor.services.route import compute_routes
-from src.constructor.services.tg_keyboard import build_view_keyboard
+from src.constructor.services.tg_keyboard import build_view_keyboard, extend_keyboard_with_route_id_buttons
 
 
-search_routes_sequence = [
+# TODO: validate and not return the routes that have reached max capacity
+
+join_routes_sequence = [
     "sourceLocation", "destinationLocation", "searchProximity", "rideStartTime",
 ]
 
@@ -46,13 +48,13 @@ def step_handler(data, chat_state):
     new_command_info = old_command_info | update_command_info
     chat_state["command_info"] = json.dumps(new_command_info)
 
-    step_name = search_routes_sequence[prev_step_index]
+    step_name = join_routes_sequence[prev_step_index]
 
-    if prev_step_index == len(search_routes_sequence) - 1:
+    if prev_step_index == len(join_routes_sequence) - 1:
         chat_state["active_command"] = None
         routes_info = compute_routes(new_command_info)
         routes = routes_info.get("Items", [])
-        keyboard_definition = build_view_keyboard(routes)
+        keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(routes), routes)
         tg_response = respond_with_inline_keyboard(
             parent_message="Found Routes:",
             keyboard_definition=keyboard_definition,
@@ -87,7 +89,7 @@ def step_handler(data, chat_state):
 
 
 def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
-    key = search_routes_sequence[prev_step_index]
+    key = join_routes_sequence[prev_step_index]
     tg_message_lookup_key = step_conf[key]["lookup_key"]
     validator_by_key = {
         "rideStartTime": validate_start_time,

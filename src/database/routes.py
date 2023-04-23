@@ -6,11 +6,11 @@ import geohash
 import boto3
 from boto3.dynamodb.conditions import Key
 
-
 resource = boto3.resource('dynamodb')
 table = resource.Table('routes-table-v2')
 
 DRIVER_TYPENAME = "DRIVER"
+PASSENGER_TYPENAME = "PASSENGER"
 ROUTE_TYPENAME = "ROUTE"
 
 index_name_by_precision = {
@@ -33,14 +33,43 @@ def map_proximity_to_precision(proximity: str) -> int:
     return precision
 
 
-def get_route_by_id(route_id: str):
+def get_route_by_id_and_username(route_id: str, username: str):
     response = table.get_item(
         Key={
             'pk': make_key(ROUTE_TYPENAME, route_id),
-            'sk': DRIVER_TYPENAME,
+            'sk': make_key(DRIVER_TYPENAME, username),
         }
     )
+
     return response.get('Item')
+
+
+def get_route_by_id(route_id: str):
+    query_args = {
+        "KeyConditionExpression": (
+                Key('gsi4pk').eq(make_key(ROUTE_TYPENAME, route_id))
+        ),
+    }
+
+    response = table.query(**query_args, IndexName="gsi4")
+    items = response['Items']
+    if len(items) < 1:
+        return None
+
+    return items[0]
+
+
+def get_passengers_routes_by_route_id(route_id: str):
+    query_args = {
+        "KeyConditionExpression": (
+                Key('pk').eq(make_key(ROUTE_TYPENAME, route_id))
+                &
+                Key('sk').begins_with(PASSENGER_TYPENAME)
+        ),
+    }
+
+    response = table.query(**query_args)
+    return response
 
 
 def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
@@ -49,14 +78,21 @@ def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
     destination_location = route_info['destinationLocation']
 
     route_info_fixed = prepare_inner_dicts_for_db(route_info)
-    start_time_epoch = int(datetime.strptime(route_info["rideStartTime"],"%d.%m.%Y %H:%M").timestamp())
+    start_time_epoch = int(datetime.strptime(route_info["rideStartTime"], "%d.%m.%Y %H:%M").timestamp())
     table.put_item(
         Item={
             **route_info_fixed,
             "pk": make_key(ROUTE_TYPENAME, route_id),
-            "sk": DRIVER_TYPENAME,
+            "sk": make_key(DRIVER_TYPENAME, username),
             "gsi3pk": make_key(DRIVER_TYPENAME, username),
             "gsi3sk": make_key(DRIVER_TYPENAME, username),
+            "approval_info": json.dumps(
+                {
+                    "YES": 0,
+                    "NO": 0,
+                }
+            ),
+            "joined_users_count": 0,
             "route_name": route_name,
             "route_id": route_id,
             "owner_username": username,
@@ -72,17 +108,20 @@ def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
     )
 
 
-def get_user_routes(
-    username: str,
-    limit: int = 5,
-    last_key: 'dict|None' = None,
-):
+def update_route(route_record):
+    table.put_item(Item=route_record)
 
+
+def get_user_routes(
+        username: str,
+        limit: int = 5,
+        last_key: 'dict|None' = None,
+):
     query_args = {
         "KeyConditionExpression": (
-            Key('gsi3pk').eq(make_key(DRIVER_TYPENAME, username))
-            &
-            Key('gsi3sk').eq(make_key(DRIVER_TYPENAME, username))
+                Key('gsi3pk').eq(make_key(DRIVER_TYPENAME, username))
+                &
+                Key('gsi3sk').eq(make_key(DRIVER_TYPENAME, username))
         ),
         "Limit": limit,
     }

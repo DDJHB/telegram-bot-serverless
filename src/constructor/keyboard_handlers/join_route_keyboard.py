@@ -1,5 +1,4 @@
-
-from src.database.routes import delete_user_route, get_route_by_id_and_username
+from src.database.routes import get_route_by_id_and_username, update_route
 from src.constructor.services.tg_keyboard import handle_navigation_buttons
 
 
@@ -9,7 +8,15 @@ def handler(keyboard_id, callback_query, chat_state):
         handle_navigation_buttons(keyboard_id, callback_query, chat_state)
         return
 
+    # none of the shit below will work
+
     username = callback_query["from"]["username"]
     route_id = callback_query['data']
     route = get_route_by_id_and_username(route_id, username)
-    delete_user_route(route["pk"], route["sk"])
+
+    # 1. add new route to DB for passenger
+
+    route["joined_users_count"] = route["joined_users_count"] + 1
+
+    route.update({"joined_users_count": route["joined_users_count"] + 1})
+    update_route(route)

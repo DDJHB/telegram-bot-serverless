@@ -20,11 +20,17 @@ def handler(event, context):
     try:
         data = event["body"]
         print(data)
-        chat_id = extract_chat_id(data)
+        chat_id, username = extract_chat_identifiers(data)
+
         chat_state = get_chat_state(chat_id)
         if not chat_state:
-            put_chat_state(chat_id, {"login_timestamp": decimal.Decimal(1.0)})
-
+            put_chat_state(
+                chat_id,
+                {
+                    "username": username,
+                    "login_timestamp": decimal.Decimal(1.0)
+                }
+            )
         chat_state = get_chat_state(chat_id)  # TODO optimize
 
         error = handle_session_login(data, chat_state, chat_id)
@@ -55,11 +61,11 @@ def handler(event, context):
         return {'statusCode': 200, 'body': {"message": "received ur message chill:)"}}
 
 
-def extract_chat_id(data):
+def extract_chat_identifiers(data):
     if callback_query := data.get("callback_query"):
-        return callback_query["message"]['chat']["id"]
+        return callback_query["message"]['chat']["id"], callback_query["from"]["username"]
     else:
-        return data["message"]["chat"]["id"]
+        return data["message"]["chat"]["id"], data["message"]["from"]["username"]
 
 
 def handle_session_login(data, chat_state, chat_id):
