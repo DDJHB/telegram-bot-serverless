@@ -57,8 +57,8 @@ def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
     key = vehicle_register_sequence[prev_step_index]
     validator_by_key = {
         "license": validate_license,
-        "model": True,
-        "color": True,
+        "model": do_not_validate,
+        "color": do_not_validate,
         "year": validate_year,
     }
     key_validator = validator_by_key[key]
@@ -73,6 +73,10 @@ def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
         key: data["message"]['text']
     }
     return update_command_info
+
+
+def do_not_validate(dummy) -> True:
+    return True
 
 
 def validate_year(year: int):
