@@ -84,7 +84,7 @@ def update_user_vehicle(username: str, index: int, vehicle: Vehicle, chat_id: in
     )
 
 
-def remove_user_vehicle(username: str, index: int, vehicle: Vehicle, chat_id: int):
+def remove_user_vehicle(username: str, index: int, chat_id: int):
     function_name = "deleteVehicle"
 
     wallet_info = get_wallet_info_record(username=username)
