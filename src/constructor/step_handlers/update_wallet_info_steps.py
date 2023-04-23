@@ -79,6 +79,6 @@ def validate_wallet_address(wallet_address, chat_state):
 
 
 def validate_private_key(private_key, chat_state):
-    wallet_address = json.loads(chat_state.get("command_info", '{}')).get("walletAddress")
+    wallet_address = json.loads(chat_state.get("command_info", '{}')).get("newWalletAddress")
     account = Account.privateKeyToAccount(private_key)
     return account.address.lower() == wallet_address.lower()
