@@ -2,6 +2,7 @@ import json
 import re
 import datetime
 
+from src.constructor.services.vehicle import Vehicle
 from src.constructor.services.vehicle_crud import add_user_vehicle
 from src.database.chat_state import update_chat_state
 
@@ -38,9 +39,15 @@ def step_handler(data, state_record):
     state_record["command_info"] = json.dumps(new_command_info)
 
     if prev_step_index == len(vehicle_register_sequence) - 1:
+        vehicle = Vehicle(
+            new_command_info['license'],
+            new_command_info['model'],
+            new_command_info['color'],
+            new_command_info['year'],
+        )
         add_user_vehicle(
             username=data["message"]["chat"]["username"],
-            vehicle=new_command_info,
+            vehicle=vehicle,
             chat_id=data["message"]["chat"]["id"],
         )
 

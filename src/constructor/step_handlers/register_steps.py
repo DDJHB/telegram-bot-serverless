@@ -84,6 +84,8 @@ def validate_password(password: str, chat_state: dict):
         return False
     if not re.search(r"[A-Z]", password):
         return False
+    if not re.search(r"[a-z]", password):
+        return False
     if not re.search(r"\d", password):
         return False
     return True
