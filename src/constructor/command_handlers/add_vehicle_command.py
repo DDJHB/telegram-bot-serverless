@@ -4,6 +4,7 @@ from src.database.chat_state import update_chat_state
 from src.constructor.bot_response import respond_with_text
 from src.constructor.services.vehicle_crud import get_user_vehicles
 
+
 def handler(data: dict, chat_state: dict):
     chat_id = data["message"]["chat"]["id"]
     username = data['message']['from']['username']
