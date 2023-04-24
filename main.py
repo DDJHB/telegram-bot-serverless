@@ -1,6 +1,8 @@
 import os
 import json
 
+from src.constructor.services.vehicle_crud import get_user_vehicles
+
 import requests
 
 TOKEN = os.environ['BOT_TOKEN']
@@ -24,7 +26,7 @@ url = BASE_URL + "/sendMessage"
 #                              [{'text': 'ROUTE#d958f7c0-00ff-49e7-b019-f093fc9e29d9', 'callback_data': 'wow'}]]}
 # }
 
-print(respond_with_text("круто игнорим, обещали сообщить когда будете", chat_id).status_code)
+# print(respond_with_text("круто игнорим, обещали сообщить когда будете", chat_id).status_code)
 # print(response.status_code)
 # print(response.text)
 
@@ -51,3 +53,5 @@ print(respond_with_text("круто игнорим, обещали сообщи�
 #                         [{'text': 'ROUTE#d958f7c0-00ff-49e7-b019-f093fc9e29d9', 'callback_data': 'wow'}]]})
 #
 
+response = get_user_vehicles(username="ddakib")
+print(response)

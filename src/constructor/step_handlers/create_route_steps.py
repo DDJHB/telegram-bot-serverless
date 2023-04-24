@@ -35,7 +35,7 @@ step_conf = {
     },
     "rideStartTime": {
         "lookup_key": "text",
-        "bot_response_message": "Please enter the price per each person! (USD)"
+        "bot_response_message": "Please enter the price per each person! (Finney)"
     },
     "pricePerPerson": {
         "lookup_key": "text",

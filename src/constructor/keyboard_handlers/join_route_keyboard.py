@@ -1,6 +1,7 @@
 from src.database.routes import get_route_by_id, update_route, put_passenger_route, passenger_route_exists
 from src.constructor.services.tg_keyboard import handle_navigation_buttons
 from src.constructor.bot_response import respond_with_text
+from src.constructor.payment_handlers.payment_utils import deposit_to_contract
 
 
 def handler(keyboard_id, callback_query, chat_state):
@@ -22,17 +23,19 @@ def handler(keyboard_id, callback_query, chat_state):
         respond_with_text(error_message, chat_id)
         return
 
-    route.update({"joined_users_count": route["joined_users_count"] + 1})
-    update_route(route)
-
-    put_passenger_route(
-        driver_route=route,
-        username=username,
-        chat_id=chat_id,
-    )
-
-    # TODO add money withdrawal
-    respond_with_text(f"Successfully joined route {route.get('route_name', 'random')}", chat_id)
+    try:
+        deposit_to_contract(
+            username=username,
+            amount=route["pricePerPerson"],
+            chat_id=chat_id,
+            additional_information={
+                "route_id": route_id,
+                "username": username,
+                "chat_id": chat_id,
+            }
+        )
+    except:
+        respond_with_text("Could not withdraw the amount from the registered wallet", chat_id)
 
 
 def validate_user_against_route(username, chat_id, route):

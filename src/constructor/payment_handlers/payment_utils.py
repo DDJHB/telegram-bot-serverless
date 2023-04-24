@@ -1,3 +1,5 @@
+import json
+
 from web3 import Web3
 
 from src.constructor.web3_utils import send_transaction_to_contract, get_base_wallet_info, call_view_contract_method
@@ -7,7 +9,7 @@ from src.database.user_info import get_user_info_record
 contract_name = "payment"
 
 
-def deposit(username: str, amount: float, chat_id: int):
+def deposit_to_contract(username: str, amount: float, chat_id: int, additional_information: dict):
     function_name = "deposit"
 
     wallet_info = get_user_info_record(username=username)
@@ -17,7 +19,7 @@ def deposit(username: str, amount: float, chat_id: int):
         function_name=function_name,
         function_args=[],
         extra_fields={
-            "amount": Web3.toWei(amount, 'ether'),
+            "amount": Web3.toWei(amount, 'finney'),
         }
     )
 
@@ -29,8 +31,9 @@ def deposit(username: str, amount: float, chat_id: int):
             "username": username,
             "function_name": function_name,
             "contract_name": contract_name,
-            "amount": Web3.toWei(amount, 'ether')
-        }
+            "amount": Web3.toWei(amount, 'ether'),
+            "additional_information": json.dumps(additional_information),
+        },
     )
 
 
