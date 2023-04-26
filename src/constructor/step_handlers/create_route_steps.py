@@ -4,8 +4,9 @@ from datetime import datetime
 from decimal import Decimal
 
 from src.database.chat_state import update_chat_state
-from src.database.routes import put_route
-from src.constructor.bot_response import respond_with_text
+from src.constructor.services.vehicle_crud import get_user_vehicles
+from src.constructor.bot_response import respond_with_text, respond_with_inline_keyboard
+from src.constructor.services.tg_keyboard import build_indexed_keyboard
 
 
 def parse_floats_to_decimals(data: dict) -> dict:
@@ -43,7 +44,7 @@ step_conf = {
     },
     "maxPassengerCapacity": {
         "lookup_key": "text",
-        "bot_response_message": "Route has successfully been created!"
+        "bot_response_message": "Please, select a vehicle for this route"
     },
 }
 
@@ -62,23 +63,35 @@ def step_handler(data, chat_state):
     new_command_info = old_command_info | update_command_info
     chat_state["command_info"] = json.dumps(new_command_info)
 
-    if prev_step_index == len(create_route_sequence) - 1:
-        chat_state["active_command"] = None
-        put_route(
-            username=data["message"]["from"]["username"],
-            chat_id=data["message"]["chat"]["id"],
-            route_name=new_command_info["routeName"],
-            route_info=parse_floats_to_decimals(new_command_info),
+    step_name = create_route_sequence[prev_step_index]
+    if step_name == "maxPassengerCapacity":
+        username = chat_state["username"]
+        vehicles = get_user_vehicles(username)
+        licenses = [v[0] for v in vehicles]
+        keyboard_def = build_indexed_keyboard(licenses)
+        tg_response = respond_with_inline_keyboard(
+            parent_message="Your vehicles:",
+            keyboard_definition=keyboard_def,
+            chat_id=chat_id,
         )
+
+        keyboard_id = str(tg_response.json()['result']["message_id"])
+        global_keyboards_info = json.loads(chat_state.get("global_keyboards_info") or '{}')
+        global_keyboards_info.update(
+            {
+                keyboard_id: {
+                    "keyboard_name": "select_route_vehicle_keyboard",
+                }
+            }
+        )
+
+        chat_state.update({"global_keyboards_info": json.dumps(global_keyboards_info)})
         update_chat_state(chat_state)
-        step_name = create_route_sequence[prev_step_index]
-        respond_with_text(step_conf[step_name]["bot_response_message"], chat_id)
         return
 
     chat_state["current_step_index"] = prev_step_index + 1
     update_chat_state(chat_state)
 
-    step_name = create_route_sequence[prev_step_index]
     respond_with_text(step_conf[step_name]["bot_response_message"], chat_id)
 
 
