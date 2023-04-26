@@ -124,6 +124,7 @@ def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
                     "NO": 0,
                 }
             ),
+            "has_started": False,
             "joined_users_count": 0,
             "route_name": route_name,
             "route_id": route_id,

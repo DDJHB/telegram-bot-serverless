@@ -27,7 +27,7 @@ def handler(data: dict, chat_state: dict):
     global_keyboards_info.update(
         {
             keyboard_id: {
-                "keyboard_name": "start_route_keyboard",
+                "keyboard_name": "end_route_keyboard",
                 "page_info": {
                     "last_evaluated_keys": {str(current_page): response.get('LastEvaluatedKey')},
                     "current_page_number": current_page,
@@ -39,7 +39,7 @@ def handler(data: dict, chat_state: dict):
     chat_state.update({"global_keyboards_info": json.dumps(global_keyboards_info)})
 
     command_state = {
-        "active_command": "startRoute",
+        "active_command": "endRoute",
         "current_step_index": 0,
         "command_info": json.dumps({}),
     }

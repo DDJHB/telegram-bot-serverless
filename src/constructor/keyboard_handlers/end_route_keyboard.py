@@ -1,6 +1,6 @@
 import json
 
-from src.database.routes import get_passengers_routes_by_route_id
+from src.database.routes import get_passengers_routes_by_route_id, get_route_by_id
 from src.database.chat_state import update_chat_state, get_chat_state
 from src.constructor.services.tg_keyboard import handle_navigation_buttons
 from src.constructor.bot_response import respond_with_inline_keyboard
@@ -13,9 +13,11 @@ def handler(keyboard_id, callback_query, chat_state):
         handle_navigation_buttons(keyboard_id, callback_query, chat_state)
         return
 
+    check_start_route(button_info)
+
     passenger_routes = get_passengers_routes_by_route_id(button_info)['Items']
 
-    passenger_chat_ids = [item["chat_id"] for item in passenger_routes]
+    passenger_chat_ids = [item["passenger_chat_id"] for item in passenger_routes]
 
     keyboard_def = build_approval_keyboard(button_info)
 
@@ -32,10 +34,21 @@ def handler(keyboard_id, callback_query, chat_state):
         global_keyboards_info.update(
             {
                 keyboard_id: {
-                    "keyboard_name": "approve_start_route_keyboard",
+                    "keyboard_name": "approve_end_route_keyboard",
+                    "page_info": {
+                        "last_evaluated_keys": None,
+                        "current_page_number": None,
+                    },
                 }
             }
         )
 
         passenger_chat_state.update({"global_keyboards_info": json.dumps(global_keyboards_info)})
         update_chat_state(passenger_chat_state)
+
+
+def check_start_route(route_id: str):
+    route = get_route_by_id(route_id)
+    if not route["has_started"]:
+        return False
+    return True
