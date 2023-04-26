@@ -51,7 +51,7 @@ functions:
           cors: true
 
   handle_scheduled_notification:
-    handler: src.scheduled_notification_handler.handler
+    handler: src.notification_schedule_handler.handler
     events:
       - schedule:
           rate: rate(5 minutes)
@@ -152,7 +152,7 @@ resources:
             AttributeType: S
           - AttributeName: gsi3sk
             AttributeType: S
-          - AttributeName: gsi4sk
+          - AttributeName: gsi4pk
             AttributeType: S
           - AttributeName: start_time_epoch
             AttributeType: N
