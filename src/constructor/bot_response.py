@@ -3,7 +3,6 @@ import json
 
 import requests
 
-
 TOKEN = os.environ['TELEGRAM_TOKEN']
 BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
 
@@ -25,9 +24,9 @@ def respond_with_map(chat_id):
 
 
 def respond_with_inline_keyboard(
-    parent_message: str,
-    keyboard_definition: dict,
-    chat_id: int,
+        parent_message: str,
+        keyboard_definition: dict,
+        chat_id: int,
 ):
     url = BASE_URL + "/sendMessage"
     data = {
@@ -40,6 +39,15 @@ def respond_with_inline_keyboard(
     print(response.status_code, response.text)
 
     return response
+
+
+def delete_message(chat_id: str, message_id: str):
+    url = BASE_URL + "/deleteMessage"
+    data = {
+        "chat_id": chat_id,
+        "message_id": message_id
+    }
+    requests.post(url, json=data)
 
 
 def update_inline_keyboard(
