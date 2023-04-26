@@ -1,4 +1,5 @@
 import json
+import time
 from datetime import datetime
 from uuid import uuid4
 import geohash
@@ -118,6 +119,7 @@ def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
             "sk": make_key(DRIVER_TYPENAME, username),
             "gsi3pk": make_key(DRIVER_TYPENAME, username),
             "gsi3sk": make_key(DRIVER_TYPENAME, username),
+            "gsi4pk": "START_TIME",
             "approval_info": json.dumps(
                 {
                     "YES": 0,
@@ -203,6 +205,25 @@ def get_routes_by_proximity(proximity: str, source_geohash: str, destination_geo
         IndexName=index_name,
         **query_args
     )
+    return response
+
+
+def get_routes_by_start_time(time_left: int):
+    now = int(time.time())
+
+    query_args = {
+        "KeyConditionExpression": (
+                Key("gsi4pk").eq("START_TIME")
+                &
+                Key("start_time_epoch").between(now + time_left * 3600 - 300, now + time_left * 3060 + 300)
+        ),
+    }
+
+    response = table.query(
+        IndexName="gsi4",
+        **query_args
+    )
+
     return response
 
 

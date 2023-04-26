@@ -50,6 +50,13 @@ functions:
           method: post
           cors: true
 
+  handle_scheduled_notification:
+    handler: src.scheduled_notification_handler.handler
+    events:
+      - schedule:
+          rate: rate(5 minutes)
+          enabled: true
+
 plugins:
   - serverless-python-requirements
 
@@ -145,6 +152,10 @@ resources:
             AttributeType: S
           - AttributeName: gsi3sk
             AttributeType: S
+          - AttributeName: gsi4sk
+            AttributeType: S
+          - AttributeName: start_time_epoch
+            AttributeType: N
         KeySchema:
           - AttributeName: pk
             KeyType: HASH
@@ -196,6 +207,14 @@ resources:
               - AttributeName: source_geohash_long
                 KeyType: HASH
               - AttributeName: destination_geohash_long
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+          - IndexName: gsi4
+            KeySchema:
+              - AttributeName: gsi4pk
+                KeyType: HASH
+              - AttributeName: start_time_epoch
                 KeyType: RANGE
             Projection:
               ProjectionType: 'ALL'
