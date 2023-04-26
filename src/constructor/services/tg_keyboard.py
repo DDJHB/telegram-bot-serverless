@@ -6,9 +6,13 @@ from src.constructor.bot_response import update_inline_keyboard
 
 
 def build_approval_keyboard(item):
-    inline_keyboard = [[build_single_route_button(item)],
-                       [{"text": "YES", "callback_data": f"YES+{item.get('route_id', 'random')}"},
-                        {"text": "NO", "callback_data": f"NO+{item.get('route_id', 'random')}"}]]
+    inline_keyboard = [
+        build_single_route_button(item),
+        [
+            {"text": "YES", "callback_data": f"YES+{item.get('route_id', 'random')}"},
+            {"text": "NO", "callback_data": f"NO+{item.get('route_id', 'random')}"}
+        ]
+    ]
 
     return {
         "inline_keyboard": inline_keyboard

@@ -3,7 +3,6 @@ from src.constructor.decorators import standard_api_handler
 from src.database.routes import get_routes_by_start_time
 
 
-@standard_api_handler
 def handler(event, context):
     try:
 
