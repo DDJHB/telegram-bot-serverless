@@ -6,8 +6,9 @@ from src.constructor.bot_response import update_inline_keyboard
 
 
 def build_approval_keyboard(item):
-    inline_keyboard = [[{"text": "YES", "callback_data": f"YES+{item}"}],
-                       [{"text": "NO", "callback_data": f"NO+{item}"}]]
+    inline_keyboard = [[build_single_route_button(item)],
+                       [{"text": "YES", "callback_data": f"YES+{item.get('route_id', 'random')}"},
+                        {"text": "NO", "callback_data": f"NO+{item.get('route_id', 'random')}"}]]
 
     return {
         "inline_keyboard": inline_keyboard
@@ -92,6 +93,7 @@ def construct_google_maps_url(route_info: dict):
     travel_mode = "&travelmode=driving"
     url = base_url + origin + destination + travel_mode
     return url
+
 
 def handle_navigation_buttons(keyboard_id, callback_query, chat_state):
     button_name = callback_query["data"]

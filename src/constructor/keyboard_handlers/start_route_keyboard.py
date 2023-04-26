@@ -33,7 +33,7 @@ def handler(keyboard_id, callback_query, chat_state):
 
     passenger_chat_ids = [item["chat_id"] for item in passenger_routes]
 
-    keyboard_def = build_approval_keyboard(button_info)
+    keyboard_def = build_approval_keyboard(route)
 
     for chat_id in passenger_chat_ids:
         tg_response = respond_with_inline_keyboard(
