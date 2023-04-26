@@ -6,8 +6,8 @@ from src.constructor.bot_response import update_inline_keyboard
 
 
 def build_approval_keyboard(item):
-    inline_keyboard = [[{"text": "YES", "callback_data": "YES+".join(item)}],
-                       [{"text": "NO", "callback_data": "NO+".join(item)}]]
+    inline_keyboard = [[{"text": "YES", "callback_data": f"YES+{item}"}],
+                       [{"text": "NO", "callback_data": f"NO+{item}"}]]
 
     return {
         "inline_keyboard": inline_keyboard

@@ -1,14 +1,20 @@
 import os
 import json
 
-from src.constructor.services.vehicle_crud import get_user_vehicles
+
 
 import requests
 
 TOKEN = os.environ['BOT_TOKEN']
 BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
 
+def build_approval_keyboard(item):
+    inline_keyboard = [[{"text": "YES", "callback_data": f"YES+{item}"}],
+                       [{"text": "NO", "callback_data": f"NO+{item}"}]]
 
+    return {
+        "inline_keyboard": inline_keyboard
+    }
 def respond_with_text(response, chat_id):
     url = BASE_URL + "/sendMessage"
     data = {"text": response.encode("utf8"), "chat_id": chat_id}
@@ -18,18 +24,14 @@ def respond_with_text(response, chat_id):
 chat_id = 539261624
 url = BASE_URL + "/sendMessage"
 
-# data = {
-#     'text': 'Your routes:',
-#     'chat_id': 563198740,
-#     'reply_markup':
-#         {'inline_keyboard': [[{'text': 'back', 'callback_data': 'back'}, {'text': 'next', 'callback_data': 'next'}],
-#                              [{'text': 'ROUTE#d958f7c0-00ff-49e7-b019-f093fc9e29d9', 'callback_data': 'wow'}]]}
-# }
+data = {
+    'text': 'Your routes:',
+    'chat_id': 563198740,
+    'reply_markup': build_approval_keyboard("ROUTE#dc85bbc2-75e2-4525-94f8-454926e58a97")
+}
 
-# print(respond_with_text("круто игнорим, обещали сообщить когда будете", chat_id).status_code)
-# print(response.status_code)
-# print(response.text)
-
+response = requests.post(url, json=data)
+print(response.status_code, response.text)
 #
 # def update_inline_keyboard(
 #         chat_id: int,
@@ -53,5 +55,5 @@ url = BASE_URL + "/sendMessage"
 #                         [{'text': 'ROUTE#d958f7c0-00ff-49e7-b019-f093fc9e29d9', 'callback_data': 'wow'}]]})
 #
 
-response = get_user_vehicles(username="ddakib")
-print(response)
+
+

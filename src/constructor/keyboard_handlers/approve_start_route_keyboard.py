@@ -12,7 +12,7 @@ def handler(keyboard_id, callback_query, chat_state):
     half_count = math.floor(route["joined_users_count"] / 2)
 
     if indicator == "YES":
-        if approval_info["YES"] > half_count:
+        if approval_info["YES"] >= half_count:
             route.update({"has_started": True})
             update_route(route)
             respond_with_text("Your ride has started!", route["chat_id"])
@@ -20,7 +20,7 @@ def handler(keyboard_id, callback_query, chat_state):
         approval_info["YES"] = approval_info["YES"] + 1
         route.update({"approval_info": approval_info})
     else:
-        if approval_info["NO"] > half_count:
+        if approval_info["NO"] >= half_count:
             respond_with_text("The route cannot start. Passengers have not confirmed the route start.",
                               route["chat_id"])
             approval_info = {
