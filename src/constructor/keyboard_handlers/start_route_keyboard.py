@@ -22,8 +22,14 @@ def handler(keyboard_id, callback_query, chat_state):
     route.update({
         "has_started": False,
         "approval_info": {
-            "YES": 0,
-            "NO": 0,
+            "start": {
+                "YES": 0,
+                "NO": 0,
+            },
+            "end": {
+                "YES": 0,
+                "NO": 0,
+            }
         }
     })
     route['approval_info'] = json.dumps(route['approval_info'])
@@ -37,7 +43,7 @@ def handler(keyboard_id, callback_query, chat_state):
 
     for chat_id in passenger_chat_ids:
         tg_response = respond_with_inline_keyboard(
-            parent_message=f"Please select if the route {button_info} has started: ",
+            parent_message="Please select if the route has started:",
             keyboard_definition=keyboard_def,
             chat_id=chat_id,
         )

@@ -13,7 +13,7 @@ def handler(keyboard_id, callback_query, chat_state):
         handle_navigation_buttons(keyboard_id, callback_query, chat_state)
         return
 
-    check_start_route(button_info)
+    check_route_start(button_info)
 
     passenger_routes = get_passengers_routes_by_route_id(button_info)['Items']
 
@@ -23,7 +23,7 @@ def handler(keyboard_id, callback_query, chat_state):
 
     for chat_id in passenger_chat_ids:
         tg_response = respond_with_inline_keyboard(
-            parent_message="Your routes:",
+            parent_message="Please select if the route has ended:",
             keyboard_definition=keyboard_def,
             chat_id=chat_id,
         )
@@ -47,7 +47,7 @@ def handler(keyboard_id, callback_query, chat_state):
         update_chat_state(passenger_chat_state)
 
 
-def check_start_route(route_id: str):
+def check_route_start(route_id: str):
     route = get_route_by_id(route_id)
     if not route["has_started"]:
         return False

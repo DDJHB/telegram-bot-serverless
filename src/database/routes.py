@@ -81,6 +81,7 @@ def put_passenger_route(driver_route: dict, username: str, chat_id: int):
         "gsi3pk": make_key(PASSENGER_TYPENAME, username),
         "gsi3sk": make_key(PASSENGER_TYPENAME, username),
         "chat_id": chat_id,
+        "username": username,
     }
 
     proximity_indexes_attributes = [
@@ -120,18 +121,23 @@ def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
             "gsi3pk": make_key(DRIVER_TYPENAME, username),
             "gsi3sk": make_key(DRIVER_TYPENAME, username),
             "gsi4pk": "START_TIME",
-            "approval_info": json.dumps(
-                {
+            "approval_info": json.dumps({
+                "start": {
                     "YES": 0,
                     "NO": 0,
-                }
-            ),
+                },
+                "end": {
+                    "YES": 0,
+                    "NO": 0,
+                },
+            }),
             "has_started": False,
             "joined_users_count": 0,
             "route_name": route_name,
             "route_id": route_id,
             "owner_username": username,
             "owner_chat_id": chat_id,
+            "username": username,
             "chat_id": chat_id,
             "start_time_epoch": start_time_epoch,
             "source_geohash_close": geohash.encode(**source_location, precision=6),

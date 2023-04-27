@@ -13,23 +13,30 @@ def handler(keyboard_id, callback_query, chat_state):
     chat_id = callback_query["from"]["id"]
 
     if indicator == "YES":
-        if approval_info["YES"] >= half_count:
+        approval_info["start"]["YES"] = approval_info["start"]["YES"] + 1
+
+        if approval_info["start"]["YES"] >= half_count:
             route.update({"has_started": True})
             update_route(route)
             respond_with_text("Your ride has started!", route["chat_id"])
 
-        approval_info["YES"] = approval_info["YES"] + 1
         route.update({"approval_info": approval_info})
     else:
-        if approval_info["NO"] >= half_count:
+        approval_info["start"]["NO"] = approval_info["start"]["NO"] + 1
+
+        if approval_info["start"]["NO"] >= half_count:
             respond_with_text("The route cannot start. Passengers have not confirmed the route start.",
                               route["chat_id"])
             approval_info = {
-                "YES": 0,
-                "NO": 0,
+                "start": {
+                    "YES": 0,
+                    "NO": 0,
+                },
+                "end": {
+                    "YES": 0,
+                    "NO": 0,
+                }
             }
-        else:
-            approval_info["NO"] = approval_info["NO"] + 1
 
         route.update({"approval_info": approval_info})
 
