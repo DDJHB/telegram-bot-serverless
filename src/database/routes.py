@@ -112,7 +112,7 @@ def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
     destination_location = route_info['destinationLocation']
 
     route_info_fixed = prepare_inner_dicts_for_db(route_info)
-    start_time_epoch = int(datetime.strptime(route_info["rideStartTime"], "%d.%m.%Y %H:%M").timestamp())
+    start_time_epoch = int(datetime.strptime(f"{route_info['rideStartTime']} +0400", "%d.%m.%Y %H:%M %z").timestamp())
     table.put_item(
         Item={
             **route_info_fixed,
