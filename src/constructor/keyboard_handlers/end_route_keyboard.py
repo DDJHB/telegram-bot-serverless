@@ -13,13 +13,13 @@ def handler(keyboard_id, callback_query, chat_state):
         handle_navigation_buttons(keyboard_id, callback_query, chat_state)
         return
 
-    check_route_start(button_info)
-
     passenger_routes = get_passengers_routes_by_route_id(button_info)['Items']
 
-    passenger_chat_ids = [item["passenger_chat_id"] for item in passenger_routes]
+    passenger_chat_ids = [item["chat_id"] for item in passenger_routes]
 
-    keyboard_def = build_approval_keyboard(button_info)
+    route = get_route_by_id(button_info)
+
+    keyboard_def = build_approval_keyboard(route)
 
     for chat_id in passenger_chat_ids:
         tg_response = respond_with_inline_keyboard(
@@ -35,10 +35,6 @@ def handler(keyboard_id, callback_query, chat_state):
             {
                 keyboard_id: {
                     "keyboard_name": "approve_end_route_keyboard",
-                    "page_info": {
-                        "last_evaluated_keys": None,
-                        "current_page_number": None,
-                    },
                 }
             }
         )
@@ -47,8 +43,7 @@ def handler(keyboard_id, callback_query, chat_state):
         update_chat_state(passenger_chat_state)
 
 
-def check_route_start(route_id: str):
-    route = get_route_by_id(route_id)
+def check_route_start(route):
     if not route["has_started"]:
         return False
     return True

@@ -83,6 +83,7 @@ def put_passenger_route(driver_route: dict, username: str, chat_id: int):
         "chat_id": chat_id,
         "username": username,
     }
+    print(passenger_route)
 
     proximity_indexes_attributes = [
         "source_geohash_close",
@@ -221,7 +222,7 @@ def get_routes_by_start_time(time_left: int):
         "KeyConditionExpression": (
                 Key("gsi4pk").eq("START_TIME")
                 &
-                Key("start_time_epoch").between(now + time_left * 3600 - 300, now + time_left * 3600 + 300)
+                Key("start_time_epoch").between(now + time_left * 3600 - 150, now + time_left * 3600 + 150)
         ),
     }
 

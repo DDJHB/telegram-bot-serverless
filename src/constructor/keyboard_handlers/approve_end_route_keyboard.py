@@ -11,7 +11,7 @@ def handler(keyboard_id, callback_query, chat_state):
     indicator, route_id = callback_query['data'].split("+")
     route = get_route_by_id(route_id)
     approval_info = json.loads(route["approval_info"])
-    half_count = math.floor((approval_info["start"]["YES"] + approval_info["start"]["NO"]) / 2)
+    half_count = (approval_info["start"]["YES"] + approval_info["start"]["NO"]) / 2
     chat_id = callback_query["from"]["id"]
 
     if indicator == "YES":
@@ -23,9 +23,10 @@ def handler(keyboard_id, callback_query, chat_state):
             passenger_wallet_addresses = [get_user_info_record(username)["wallet_address"] for username in passenger_usernames]
 
             total_amount = route["pricePerPerson"] * len(passenger_routes)
+            print(passenger_wallet_addresses, total_amount)
             transfer(passenger_wallet_addresses, route["owner_username"], total_amount, route["owner_chat_id"])
 
-            respond_with_text("Your ride has started!", route["chat_id"])
+            respond_with_text("Your ride has ended!", route["chat_id"])
 
         route.update({"approval_info": approval_info})
     else:

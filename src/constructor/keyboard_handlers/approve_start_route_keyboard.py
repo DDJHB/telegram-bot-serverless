@@ -9,8 +9,10 @@ def handler(keyboard_id, callback_query, chat_state):
     indicator, route_id = callback_query['data'].split("+")
     route = get_route_by_id(route_id)
     approval_info = json.loads(route["approval_info"])
-    half_count = math.floor(route["joined_users_count"] / 2)
+    half_count = route["joined_users_count"] / 2
     chat_id = callback_query["from"]["id"]
+    if has_started := route.get("has_started"):
+        return
 
     if indicator == "YES":
         approval_info["start"]["YES"] = approval_info["start"]["YES"] + 1

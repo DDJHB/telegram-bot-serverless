@@ -31,7 +31,7 @@ def deposit_to_contract(username: str, amount: float, chat_id: int, additional_i
             "username": username,
             "function_name": function_name,
             "contract_name": contract_name,
-            "amount": Web3.toWei(amount, 'ether'),
+            "amount": Web3.toWei(amount, 'finney'),
             "additional_information": json.dumps(additional_information),
         },
     )
@@ -46,7 +46,7 @@ def transfer(passengers: list[str], username: str, amount: float, chat_id: int):
         wallet_info=base_wallet_info,
         contract_name=contract_name,
         function_name=function_name,
-        function_args=[passengers, receiver_wallet_info['wallet_address'], Web3.toWei(amount, 'ether')],
+        function_args=[passengers, receiver_wallet_info['wallet_address'], Web3.toWei(amount, 'finney')],
     )
 
     # save to db
@@ -57,7 +57,7 @@ def transfer(passengers: list[str], username: str, amount: float, chat_id: int):
             "username": username,
             "function_name": function_name,
             "contract_name": contract_name,
-            "amount": Web3.toWei(amount, 'ether')
+            "amount": Web3.toWei(amount, 'finney')
         }
     )
 
@@ -70,7 +70,7 @@ def withdraw(username: str, amount: float, chat_id: int):
         wallet_info=wallet_info,
         contract_name=contract_name,
         function_name=function_name,
-        function_args=[Web3.toWei(amount, 'ether')],
+        function_args=[Web3.toWei(amount, 'finney')],
     )
 
     # save to db
@@ -81,7 +81,7 @@ def withdraw(username: str, amount: float, chat_id: int):
             "username": username,
             "function_name": function_name,
             "contract_name": contract_name,
-            "amount": Web3.toWei(amount, 'ether')
+            "amount": Web3.toWei(amount, 'finney')
         }
     )
 
