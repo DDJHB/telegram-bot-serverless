@@ -8,6 +8,7 @@ def handler(event, context):
 
         routes_1_hour = get_routes_by_start_time(1)
         routes_24_hour = get_routes_by_start_time(24)
+        print(routes_1_hour, routes_24_hour)
 
         for item in routes_1_hour.get('Items', []):
             respond_with_text(f"One hour left till {item['route_name']} route!", item['chat_id'])

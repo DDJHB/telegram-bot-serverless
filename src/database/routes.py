@@ -215,9 +215,11 @@ def get_routes_by_start_time(time_left: int):
         "KeyConditionExpression": (
                 Key("gsi4pk").eq("START_TIME")
                 &
-                Key("start_time_epoch").between(now + time_left * 3600 - 300, now + time_left * 3060 + 300)
+                Key("start_time_epoch").between(now + time_left * 3600 - 300, now + time_left * 3600 + 300)
         ),
     }
+
+    print(now + time_left * 3600 - 300, now + time_left * 3600 + 30)
 
     response = table.query(
         IndexName="gsi4",
