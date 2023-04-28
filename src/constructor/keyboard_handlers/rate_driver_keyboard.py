@@ -5,8 +5,7 @@ from src.database.user_info import get_user_info_record, put_user_info_record
 
 def handler(keyboard_id, callback_query, chat_state):
     chat_id = callback_query['message']['chat']['id']
-    route_id = callback_query['data']
-    rating = float(callback_query['message'])
+    rating, route_id = callback_query['data'].split("#")
 
     route = get_route_by_id(route_id)
     driver = route['owner_username']

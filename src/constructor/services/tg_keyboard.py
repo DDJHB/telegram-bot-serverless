@@ -64,11 +64,15 @@ def build_indexed_keyboard(items: list) -> dict:
 def build_rating_keyboard(route_id: str) -> dict:
     inline_keyboard = [[]]
     for i in range(1, 6):
-        inline_keyboard[0].append(build_single_indexed_route_button(route_id, i))
+        inline_keyboard[0].append(build_single_indexed_rating_button(route_id, i))
 
     return {
         "inline_keyboard": inline_keyboard
     }
+
+
+def build_single_indexed_rating_button(route_id: str, index: int) -> dict:
+    return {"text": str(index), "callback_data": f"{index}#{route_id}"}
 
 
 def build_single_indexed_route_button(route_id: str, index: int) -> dict:
