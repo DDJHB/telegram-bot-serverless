@@ -72,7 +72,7 @@ def build_rating_keyboard(route_id: str) -> dict:
 
 
 def build_single_indexed_route_button(route_id: str, index: int) -> dict:
-    return {"text": str(index + 1), "callback_data": route_id}
+    return {"text": str(index), "callback_data": route_id}
 
 
 def build_single_route_button(route_info: dict) -> list[dict]:
