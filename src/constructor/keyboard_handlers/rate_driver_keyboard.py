@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from src.constructor.bot_response import respond_with_text, delete_message
 from src.database.routes import get_route_by_id
 from src.database.user_info import get_user_info_record, put_user_info_record
@@ -5,7 +7,8 @@ from src.database.user_info import get_user_info_record, put_user_info_record
 
 def handler(keyboard_id, callback_query, chat_state):
     chat_id = callback_query['message']['chat']['id']
-    rating, route_id = callback_query['data'].split("#")
+    rating = Decimal(callback_query['data'].split("#")[0])
+    route_id = callback_query['data'].split("#")[1]
 
     route = get_route_by_id(route_id)
     driver = route['owner_username']
