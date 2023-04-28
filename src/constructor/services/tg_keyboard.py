@@ -4,6 +4,8 @@ from src.database.routes import get_user_routes
 from src.database.chat_state import update_chat_state
 from src.constructor.bot_response import update_inline_keyboard
 from src.constructor.services.vehicle_crud import get_user_vehicle
+from src.constructor.bot_response import respond_with_text
+
 
 
 def build_approval_keyboard(item):
@@ -80,10 +82,8 @@ def build_single_indexed_route_button(route_id: str, index: int) -> dict:
 
 
 def build_single_route_button(route_info: dict) -> list[dict]:
-    vehicle_plate_number = get_user_vehicle(route_info["owner_username"], int(route_info["vehicle_index"]))
-    return [{"text": f"{route_info.get('routeName', 'random')} - {route_info.get('rideStartTime', 'random')}"
-                     f" - {vehicle_plate_number}",
-             "url": construct_google_maps_url(route_info)}]
+    return [{"text": route_info.get('routeName', 'random'), "callback_data": f"info+{route_info['route_id']}"},
+            {"text": "\U0001F4CD", "url": construct_google_maps_url(route_info)}]
 
 
 def build_indexed_button(item: str, index: int) -> list[dict]:
@@ -102,6 +102,10 @@ def build_navigation_buttons() -> list[dict]:
         },
     ]
 
+# vehicle_plate_number = get_user_vehicle(route['owner_username'], route["vehicle_index"])
+#         respond_with_text(f"{route.get('routeName', 'random')},\n"
+#                           f"Route start time: {route.get('rideStartTime', 'random')},\n"
+#                           f"Vehicle plate number: {vehicle_plate_number}", route['owner_chat_id'])
 
 def construct_google_maps_url(route_info: dict):
     destination = json.loads(route_info["destinationLocation"])
@@ -169,3 +173,12 @@ def handle_navigation_buttons(keyboard_id, callback_query, chat_state):
 
         chat_state.update({"global_keyboards_info": json.dumps(global_keyboards_info)})
         update_chat_state(chat_state)
+
+
+def handle_route_info_button(route, chat_id):
+    vehicle = get_user_vehicle(route['owner_username'], route["vehicle_index"])
+    route_info_message = f"""Route Name: {route["route_name"]}
+        Route Start Time: {route["rideStartTime"]}
+        Vehicle: {vehicle}
+        """
+    respond_with_text(route_info_message, chat_id)
