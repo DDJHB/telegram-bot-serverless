@@ -7,7 +7,6 @@ from src.constructor.services.vehicle_crud import get_user_vehicle
 from src.constructor.bot_response import respond_with_text
 
 
-
 def build_approval_keyboard(item):
     inline_keyboard = [
         build_single_route_button(item),
@@ -102,6 +101,7 @@ def build_navigation_buttons() -> list[dict]:
         },
     ]
 
+
 # vehicle_plate_number = get_user_vehicle(route['owner_username'], route["vehicle_index"])
 #         respond_with_text(f"{route.get('routeName', 'random')},\n"
 #                           f"Route start time: {route.get('rideStartTime', 'random')},\n"
@@ -177,8 +177,7 @@ def handle_navigation_buttons(keyboard_id, callback_query, chat_state):
 
 def handle_route_info_button(route, chat_id):
     vehicle = get_user_vehicle(route['owner_username'], int(route["vehicle_index"]))
-    route_info_message = f"""Route Name: {route["route_name"]}
-        Route Start Time: {route["rideStartTime"]}
-        Vehicle: {vehicle}
-        """
+    route_info_message = f"Route Name: {route['route_name']},\n" \
+                         f"Route Start Time: {route['rideStartTime']}\n" \
+                         f"Vehicle: {vehicle}"
     respond_with_text(route_info_message, chat_id)
