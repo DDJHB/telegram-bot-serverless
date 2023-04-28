@@ -29,6 +29,14 @@ def build_view_keyboard(items: list[dict]) -> dict:
     }
 
 
+def build_notification_view_keyboard(item: dict) -> dict:
+    inline_keyboard = [build_single_route_button(item)]
+
+    return {
+        "inline_keyboard": inline_keyboard
+    }
+
+
 def extend_keyboard_with_route_id_buttons(keyboard_definition, routes) -> dict:
     keyboard_list = keyboard_definition["inline_keyboard"]
     index_buttons_rows = []

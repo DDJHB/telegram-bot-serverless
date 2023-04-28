@@ -1,6 +1,6 @@
 from src.constructor.bot_response import respond_with_text, respond_with_inline_keyboard
 from src.constructor.decorators import standard_api_handler
-from src.constructor.services.tg_keyboard import build_view_keyboard
+from src.constructor.services.tg_keyboard import build_notification_view_keyboard
 from src.database.routes import get_routes_by_start_time
 
 
@@ -11,7 +11,7 @@ def handler(event, context):
         print(routes_1_hour, routes_24_hour)
 
         for item in routes_1_hour.get('Items', []):
-            keyboard_def = build_view_keyboard([item])
+            keyboard_def = build_notification_view_keyboard(item)
             tg_response = respond_with_inline_keyboard(
                 parent_message=f"One hour left till {item['route_name']} route!",
                 keyboard_definition=keyboard_def,
@@ -19,7 +19,7 @@ def handler(event, context):
             )
 
         for item in routes_24_hour.get('Items', []):
-            keyboard_def = build_view_keyboard([item])
+            keyboard_def = build_notification_view_keyboard(item)
             tg_response = respond_with_inline_keyboard(
                 parent_message=f"One day left till {item['route_name']} route!",
                 keyboard_definition=keyboard_def,
