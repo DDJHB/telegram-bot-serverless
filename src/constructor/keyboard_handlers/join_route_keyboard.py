@@ -1,5 +1,5 @@
 from src.database.routes import get_route_by_id, update_route, put_passenger_route, passenger_route_exists
-from src.constructor.services.tg_keyboard import handle_navigation_buttons
+from src.constructor.services.tg_keyboard import handle_navigation_buttons, handle_route_info_button
 from src.constructor.bot_response import respond_with_text
 from src.constructor.payment_handlers.payment_utils import deposit_to_contract
 
@@ -16,6 +16,10 @@ def handler(keyboard_id, callback_query, chat_state):
     route_id = callback_query['data']
 
     route = get_route_by_id(route_id)
+
+    if button_info.startswith("info"):
+        handle_route_info_button(route, chat_id)
+        return
 
     can_join, error_message = validate_user_against_route(username, chat_id, route)
 
