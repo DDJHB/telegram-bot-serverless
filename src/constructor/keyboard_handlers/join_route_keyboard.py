@@ -15,12 +15,12 @@ def handler(keyboard_id, callback_query, chat_state):
 
     route_id = callback_query['data']
 
-    route = get_route_by_id(route_id)
-
     if button_info.startswith("info"):
+        route = get_route_by_id(button_info.split("+")[-1])
         handle_route_info_button(route, chat_id)
         return
 
+    route = get_route_by_id(route_id)
     can_join, error_message = validate_user_against_route(username, chat_id, route)
 
     if not can_join:

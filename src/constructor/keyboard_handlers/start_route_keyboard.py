@@ -13,14 +13,14 @@ def handler(keyboard_id, callback_query, chat_state):
         handle_navigation_buttons(keyboard_id, callback_query, chat_state)
         return
 
-    route = get_route_by_id(button_info)
-
     chat_id = callback_query["from"]["id"]
 
     if button_info.startswith("info"):
+        route = get_route_by_id(button_info.split("+")[-1])
         handle_route_info_button(route, chat_id)
         return
 
+    route = get_route_by_id(button_info)
     if route["has_started"]:
         respond_with_text("This ride has already started!", callback_query['message']['chat']['id'])
         return
