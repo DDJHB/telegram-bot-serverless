@@ -30,7 +30,7 @@ def handler(keyboard_id, callback_query, chat_state):
 
             for passenger_route in passenger_routes:
                 respond_with_text("Your ride has ended!", passenger_route["chat_id"])
-                rate_driver(passenger_routes)
+                rate_driver(passenger_route)
 
             respond_with_text("Your ride has ended!", route["chat_id"])
             route.update({
