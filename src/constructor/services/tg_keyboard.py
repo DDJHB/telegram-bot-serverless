@@ -176,7 +176,7 @@ def handle_navigation_buttons(keyboard_id, callback_query, chat_state):
 
 
 def handle_route_info_button(route, chat_id):
-    vehicle = get_user_vehicle(route['owner_username'], route["vehicle_index"])
+    vehicle = get_user_vehicle(route['owner_username'], int(route["vehicle_index"]))
     route_info_message = f"""Route Name: {route["route_name"]}
         Route Start Time: {route["rideStartTime"]}
         Vehicle: {vehicle}
