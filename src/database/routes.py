@@ -133,6 +133,7 @@ def put_route(username: str, chat_id: int, route_name: str, route_info: dict):
                 },
             }),
             "has_started": False,
+            "has_ended": False,
             "joined_users_count": 0,
             "route_name": route_name,
             "route_id": route_id,

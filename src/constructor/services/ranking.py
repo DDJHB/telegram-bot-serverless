@@ -2,11 +2,13 @@ import json
 
 from src.constructor.bot_response import respond_with_text, respond_with_inline_keyboard
 from src.constructor.services.tg_keyboard import build_rating_keyboard
-from src.database.chat_state import update_chat_state
+from src.database.chat_state import update_chat_state, get_chat_state
 
 
-def rate_driver(route: dict, chat_state: dict, chat_id: int):
+def rate_driver(route: dict):
     route_id = route["route_id"]
+    chat_id = route['chat_id']
+    chat_state = get_chat_state(chat_id)
 
     keyboard_def = build_rating_keyboard(route_id)
     tg_response = respond_with_inline_keyboard(

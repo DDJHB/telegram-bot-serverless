@@ -1,5 +1,4 @@
-from src.constructor.bot_response import respond_with_text
-from src.constructor.services.vehicle_crud import remove_user_vehicle
+from src.constructor.bot_response import respond_with_text, delete_message
 from src.database.routes import get_route_by_id
 from src.database.user_info import get_user_info_record, put_user_info_record
 
@@ -26,3 +25,4 @@ def handler(keyboard_id, callback_query, chat_state):
     )
 
     respond_with_text(f"Rated {driver} {rating}\U00002B50", chat_id)
+    delete_message(chat_id, keyboard_id)
