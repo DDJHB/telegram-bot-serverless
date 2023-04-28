@@ -23,8 +23,7 @@ def build_approval_keyboard(item):
 def build_view_keyboard(items: list[dict]) -> dict:
     inline_keyboard = [build_navigation_buttons()]
     for item in items:
-        vehicle = get_user_vehicle(item["owner_username"], item["vehicle_index"])
-        inline_keyboard.append(build_single_route_button(item, vehicle))
+        inline_keyboard.append(build_single_route_button(item))
 
     return {
         "inline_keyboard": inline_keyboard
@@ -32,8 +31,7 @@ def build_view_keyboard(items: list[dict]) -> dict:
 
 
 def build_notification_view_keyboard(item: dict) -> dict:
-    vehicle = get_user_vehicle(item["owner_username"], item["vehicle_index"])
-    inline_keyboard = [build_single_route_button(item, vehicle)]
+    inline_keyboard = [build_single_route_button(item)]
 
     return {
         "inline_keyboard": inline_keyboard
@@ -77,7 +75,8 @@ def build_single_indexed_route_button(route_id: str, index: int) -> dict:
     return {"text": str(index + 1), "callback_data": route_id}
 
 
-def build_single_route_button(route_info: dict, vehicle_plate_number: str) -> list[dict]:
+def build_single_route_button(route_info: dict) -> list[dict]:
+    vehicle_plate_number = get_user_vehicle(route_info["owner_username"], int(route_info["vehicle_index"]))
     return [{"text": f"{route_info.get('routeName', 'random')} - {route_info.get('rideStartTime', 'random')}"
                      f" - {vehicle_plate_number}",
              "url": construct_google_maps_url(route_info)}]
