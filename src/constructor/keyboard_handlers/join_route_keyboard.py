@@ -22,7 +22,7 @@ def handler(keyboard_id, callback_query, chat_state):
 
     route = get_route_by_id(route_id)
 
-    is_passenger, error_message = validate_driver_against_route(chat_id, route)
+    is_passenger, error_message = validate_driver_against_route(route, chat_id)
 
     if not is_passenger:
         respond_with_text(error_message, chat_id)
