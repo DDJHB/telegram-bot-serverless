@@ -65,6 +65,8 @@ def validate_driver_against_route(route, chat_id):
     if chat_id == route["owner_chat_id"]:
         return False, "You cannot join you own ride.."
 
+    return True, ""
+
 
 def validate_user_against_route(username, chat_id, route):
     max_capacity = route["maxPassengerCapacity"]
@@ -91,6 +93,9 @@ def handle_navigation_buttons(*, button_name, chat_state, chat_id, keyboard_id):
         last_evaluated_key = page_info["last_evaluated_keys"][str(current_page_number)]
         response = compute_routes(search_route_info, last_key=last_evaluated_key)
         routes = response.get("Items", [])
+        if not routes:
+            response = compute_routes(search_route_info, last_key=None)
+            routes = response.get("Items", [])
         keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(routes), routes)
         update_inline_keyboard(chat_id, keyboard_id, keyboard_definition)
 
