@@ -185,5 +185,6 @@ def handle_route_info_button(route, chat_id):
     vehicle = get_user_vehicle(route['owner_username'], int(route["vehicle_index"]))
     route_info_message = f"Route Name: {route['route_name']},\n" \
                          f"Route Start Time: {route['rideStartTime']}\n" \
-                         f"Vehicle: {vehicle}"
+                         f"Vehicle: plate number:{vehicle[0]}, brand:{vehicle[1]}, color:{vehicle[2]}, year: {vehicle[3]}\n" \
+                         f"Route Price: {route['pricePerPerson']}"
     respond_with_text(route_info_message, chat_id)
