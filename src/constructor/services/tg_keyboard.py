@@ -5,6 +5,7 @@ from src.database.chat_state import update_chat_state
 from src.constructor.bot_response import update_inline_keyboard
 from src.constructor.services.vehicle_crud import get_user_vehicle
 from src.constructor.bot_response import respond_with_text
+from src.database.user_info import get_user_info_record
 
 
 def build_approval_keyboard(item):
@@ -183,13 +184,17 @@ def handle_navigation_buttons(
 
 def handle_route_info_button(route, chat_id):
     vehicle = get_user_vehicle(route['owner_username'], int(route["vehicle_index"]))
+    driver_info = get_user_info_record(route['owner_username'])
 
     def extend_with_tabbed_bullet(prompt: str):
-        return "\t\t\U00002022" + prompt
+        return "\t\t\U00002022 " + prompt
 
-    route_info_message = f"Route Name: {route['route_name']},\n"
+    route_info_message = f"Route Name: {route['route_name']}\n"
     route_info_message += f"Route Start Time: {route['rideStartTime']}\n"
-    route_info_message += f"Vehicle:\n"
+    route_info_message += f"Driver: {route['owner_username']}"
+    if driver_info['raters_num'] != 0:
+        route_info_message += f" with the rating of {driver_info['rating']}\U00002B50 based on {driver_info['raters-num']} votes"
+    route_info_message += f"\nVehicle:\n"
     route_info_message += extend_with_tabbed_bullet(f"plate number: {vehicle[0]}\n")
     route_info_message += extend_with_tabbed_bullet(f"model: {vehicle[1]}\n")
     route_info_message += extend_with_tabbed_bullet(f"color: {vehicle[2]}\n")
