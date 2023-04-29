@@ -12,7 +12,7 @@ provider:
   runtime: python3.9
   architecture: arm64
   stage: dev
-  region: us-east-1
+  region: eu-central-1
   timeout: 20
   iamRoleStatements:
     - Effect: Allow
