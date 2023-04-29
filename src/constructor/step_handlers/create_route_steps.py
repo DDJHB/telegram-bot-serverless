@@ -135,7 +135,8 @@ def validate_start_time(start_time: str) -> bool:
     """
     date_format = "%d.%m.%Y %H:%M"
     try:
-        start_time = datetime.strptime(start_time, date_format)
+        timezone = pytz.timezone('Etc/GMT-4')
+        start_time = timezone.localize(datetime.strptime(start_time, date_format))
         if start_time > datetime.now(pytz.timezone('Etc/GMT-4')):
             return True
     except ValueError:
