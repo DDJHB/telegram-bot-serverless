@@ -7,8 +7,16 @@ from src.database.routes import get_route_by_id
 def handler(keyboard_id, callback_query, chat_state):
     button_info = callback_query["data"]
     username = callback_query["from"]["username"]
+
     if any(button_info.startswith(button_name) for button_name in ["next", "back"]):
-        handle_navigation_buttons(keyboard_id, callback_query, chat_state, get_user_routes, {"username": username})
+        handle_navigation_buttons(
+            keyboard_id=keyboard_id,
+            callback_query=callback_query,
+            chat_state=chat_state,
+            query_method=get_user_routes,
+            query_args={"username": username},
+            extend_with_indices=False,
+        )
         return
 
     _, route_id = button_info.split("+")

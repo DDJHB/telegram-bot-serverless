@@ -77,7 +77,7 @@ def build_single_indexed_rating_button(route_id: str, index: int) -> dict:
 
 
 def build_single_indexed_route_button(route_id: str, index: int) -> dict:
-    return {"text": str(index), "callback_data": route_id}
+    return {"text": str(index + 1), "callback_data": route_id}
 
 
 def build_single_route_button(route_info: dict) -> list[dict]:
@@ -114,7 +114,14 @@ def construct_google_maps_url(route_info: dict):
     return url
 
 
-def handle_navigation_buttons(keyboard_id, callback_query, chat_state, query_method, query_args: dict):
+def handle_navigation_buttons(
+    keyboard_id,
+    callback_query,
+    chat_state,
+    query_method,
+    query_args: dict,
+    extend_with_indices: bool = True,
+):
     button_name = callback_query["data"]
     username = callback_query["from"]["username"]
     chat_id = callback_query["message"]["chat"]["id"]
@@ -131,7 +138,9 @@ def handle_navigation_buttons(keyboard_id, callback_query, chat_state, query_met
         items = response['Items']
 
         # TODO MOVE DOWN U STUPID MORON
-        keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(items), items)
+        keyboard_definition = build_view_keyboard(items)
+        if extend_with_indices:
+            keyboard_definition = extend_keyboard_with_route_id_buttons(keyboard_definition, items)
         update_inline_keyboard(chat_id, keyboard_id, keyboard_definition)
 
         new_last_evaluated_key = response.get('LastEvaluatedKey')
@@ -156,7 +165,9 @@ def handle_navigation_buttons(keyboard_id, callback_query, chat_state, query_met
         response = query_method(**query_args, last_key=needed_page_le_key)
         items = response['Items']
 
-        keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(items), items)
+        keyboard_definition = build_view_keyboard(items)
+        if extend_with_indices:
+            keyboard_definition = extend_keyboard_with_route_id_buttons(keyboard_definition, items)
         update_inline_keyboard(chat_id, keyboard_id, keyboard_definition)
 
         new_last_evaluated_key = response.get('LastEvaluatedKey')

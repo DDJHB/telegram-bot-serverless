@@ -1,6 +1,6 @@
 import json
 
-from src.database.routes import get_passengers_routes_by_route_id, get_route_by_id
+from src.database.routes import get_passengers_routes_by_route_id, get_route_by_id, get_user_routes
 from src.database.chat_state import update_chat_state, get_chat_state
 from src.constructor.services.tg_keyboard import handle_navigation_buttons
 from src.constructor.bot_response import respond_with_inline_keyboard
@@ -9,8 +9,16 @@ from src.constructor.services.tg_keyboard import build_approval_keyboard
 
 def handler(keyboard_id, callback_query, chat_state):
     button_info = callback_query['data']  # route_id
+    username = callback_query["from"]["username"]
+
     if any(button_info.startswith(button_name) for button_name in ["next", "back"]):
-        handle_navigation_buttons(keyboard_id, callback_query, chat_state)
+        handle_navigation_buttons(
+            keyboard_id=keyboard_id,
+            callback_query=callback_query,
+            chat_state=chat_state,
+            query_method=get_user_routes,
+            query_args={"username": username},
+        )
         return
 
     passenger_routes = get_passengers_routes_by_route_id(button_info)['Items']
