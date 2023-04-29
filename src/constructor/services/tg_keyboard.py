@@ -183,8 +183,16 @@ def handle_navigation_buttons(
 
 def handle_route_info_button(route, chat_id):
     vehicle = get_user_vehicle(route['owner_username'], int(route["vehicle_index"]))
-    route_info_message = f"Route Name: {route['route_name']},\n" \
-                         f"Route Start Time: {route['rideStartTime']}\n" \
-                         f"Vehicle: plate number:{vehicle[0]}, brand:{vehicle[1]}, color:{vehicle[2]}, year: {vehicle[3]}\n" \
-                         f"Route Price: {route['pricePerPerson']}"
+
+    def extend_with_tabbed_bullet(prompt: str):
+        return "\t\t\U00002022" + prompt
+
+    route_info_message = f"Route Name: {route['route_name']},\n"
+    route_info_message += f"Route Start Time: {route['rideStartTime']}\n"
+    route_info_message += f"Vehicle:\n"
+    route_info_message += extend_with_tabbed_bullet(f"plate number: {vehicle[0]}\n")
+    route_info_message += extend_with_tabbed_bullet(f"model: {vehicle[1]}\n")
+    route_info_message += extend_with_tabbed_bullet(f"color: {vehicle[2]}\n")
+    route_info_message += extend_with_tabbed_bullet(f"year: {vehicle[3]}\n")
+    route_info_message += extend_with_tabbed_bullet(f"Route Price: {route['pricePerPerson']} Finney")
     respond_with_text(route_info_message, chat_id)

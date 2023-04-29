@@ -7,9 +7,11 @@ TOKEN = os.environ['TELEGRAM_TOKEN']
 BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
 
 
-def respond_with_text(response, chat_id):
+def respond_with_text(response, chat_id, parse_mode: str = None):
     url = BASE_URL + "/sendMessage"
     data = {"text": response.encode("utf8"), "chat_id": chat_id}
+    if parse_mode:
+        data.update({"parse_mode": parse_mode})
     requests.post(url, data)
 
 
