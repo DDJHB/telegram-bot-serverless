@@ -114,7 +114,7 @@ def construct_google_maps_url(route_info: dict):
     return url
 
 
-def handle_navigation_buttons(keyboard_id, callback_query, chat_state):
+def handle_navigation_buttons(keyboard_id, callback_query, chat_state, query_method, query_args: dict):
     button_name = callback_query["data"]
     username = callback_query["from"]["username"]
     chat_id = callback_query["message"]["chat"]["id"]
@@ -127,7 +127,7 @@ def handle_navigation_buttons(keyboard_id, callback_query, chat_state):
         current_page_number = page_info["current_page_number"]
         last_evaluated_key = page_info["last_evaluated_keys"][str(current_page_number)]
 
-        response = get_user_routes(username, limit=5, last_key=last_evaluated_key)
+        response = query_method(**query_args, last_key=last_evaluated_key)
         items = response['Items']
 
         # TODO MOVE DOWN U STUPID MORON
@@ -153,7 +153,7 @@ def handle_navigation_buttons(keyboard_id, callback_query, chat_state):
         needed_page_number = current_page_number - 2
 
         needed_page_le_key = page_info["last_evaluated_keys"].get(str(needed_page_number))
-        response = get_user_routes(username, limit=5, last_key=needed_page_le_key)
+        response = query_method(**query_args, last_key=needed_page_le_key)
         items = response['Items']
 
         keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(items), items)

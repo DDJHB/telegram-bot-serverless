@@ -71,6 +71,7 @@ def step_handler(data, chat_state):
                         "last_evaluated_keys": {str(current_page): routes_info.get('LastEvaluatedKey')},
                         "current_page_number": current_page,
                     },
+                    "search_info": new_command_info,
                 }
             }
         )

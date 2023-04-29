@@ -1,17 +1,29 @@
-from src.database.routes import get_route_by_id, update_route, put_passenger_route, passenger_route_exists
-from src.constructor.services.tg_keyboard import handle_navigation_buttons, handle_route_info_button
+import json
+from src.database.routes import get_route_by_id, passenger_route_exists
+from src.database.chat_state import update_chat_state
+from src.constructor.services.tg_keyboard import handle_route_info_button
 from src.constructor.bot_response import respond_with_text
 from src.constructor.payment_handlers.payment_utils import deposit_to_contract
+from src.constructor.services.route import compute_routes
+from src.constructor.services.tg_keyboard import (
+    extend_keyboard_with_route_id_buttons, build_view_keyboard, update_inline_keyboard
+)
 
 
 def handler(keyboard_id, callback_query, chat_state):
     button_info = callback_query['data']
+    chat_id = callback_query["from"]["id"]
+
     if any(button_info.startswith(button_name) for button_name in ["next", "back"]):
-        handle_navigation_buttons(keyboard_id, callback_query, chat_state)
+        handle_navigation_buttons(
+            button_name=button_info,
+            chat_state=chat_state,
+            chat_id=chat_id,
+            keyboard_id=keyboard_id,
+        )
         return
 
     username = callback_query["from"]["username"]
-    chat_id = callback_query["from"]["id"]
 
     route_id = callback_query['data']
 
@@ -65,3 +77,50 @@ def validate_user_against_route(username, chat_id, route):
         return False, "User has already joined this route previously"
 
     return True, ""
+
+
+def handle_navigation_buttons(*, button_name, chat_state, chat_id, keyboard_id):
+    global_keyboards_info = json.loads(chat_state.get("global_keyboards_info") or '{}')
+    keyboard_info = global_keyboards_info[keyboard_id]
+
+    page_info = keyboard_info["page_info"]
+    current_page_number = page_info["current_page_number"]
+    search_route_info = keyboard_info["search_info"]
+
+    if button_name == "next":
+        last_evaluated_key = page_info["last_evaluated_keys"][str(current_page_number)]
+        response = compute_routes(search_route_info, last_key=last_evaluated_key)
+        routes = response.get("Items", [])
+        keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(routes), routes)
+        update_inline_keyboard(chat_id, keyboard_id, keyboard_definition)
+
+        new_last_evaluated_key = response.get('LastEvaluatedKey')
+        new_page_number = current_page_number + 1
+
+        page_info["last_evaluated_keys"][str(new_page_number)] = new_last_evaluated_key
+        page_info["current_page_number"] = new_page_number
+        global_keyboards_info[keyboard_id].update({"page_info": page_info})
+
+        chat_state.update({"global_keyboards_info": json.dumps(global_keyboards_info)})
+        update_chat_state(chat_state)
+    else:
+        if current_page_number == 1:
+            return
+
+        needed_page_number = current_page_number - 2
+        needed_page_le_key = page_info["last_evaluated_keys"].get(str(needed_page_number))
+        response = compute_routes(search_route_info, last_key=needed_page_le_key)
+        items = response['Items']
+
+        keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(items), items)
+        update_inline_keyboard(chat_id, keyboard_id, keyboard_definition)
+
+        new_last_evaluated_key = response.get('LastEvaluatedKey')
+        new_page_number = current_page_number - 1
+
+        page_info["last_evaluated_keys"][str(new_page_number)] = new_last_evaluated_key
+        page_info["current_page_number"] = new_page_number
+        global_keyboards_info[keyboard_id].update({"page_info": page_info})
+
+        chat_state.update({"global_keyboards_info": json.dumps(global_keyboards_info)})
+        update_chat_state(chat_state)

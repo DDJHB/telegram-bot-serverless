@@ -195,7 +195,13 @@ def get_route_by_name(username: str, route_name: str):
     return items[0]
 
 
-def get_routes_by_proximity(proximity: str, source_geohash: str, destination_geohash: str, limit: int = 5):
+def get_routes_by_proximity(
+    proximity: str,
+    source_geohash: str,
+    destination_geohash: str,
+    limit: int = 5,
+    last_key: dict = None
+):
     precision = map_proximity_to_precision(proximity)
     index_name = index_name_by_precision.get(precision)
 
@@ -209,6 +215,10 @@ def get_routes_by_proximity(proximity: str, source_geohash: str, destination_geo
                 Key(gsi_sk).eq(destination_geohash)
         ),
     }
+
+    if last_key:
+        query_args.update({"ExclusiveStartKey": last_key})
+
     response = table.query(
         IndexName=index_name,
         Limit=limit,
