@@ -24,4 +24,5 @@ def handler(data: dict, chat_state: dict):
     chat_state.update(command_state)
     update_chat_state(chat_state)
 
-    respond_with_text("Please provide your license plate number!", chat_id)
+    respond_with_text("Please provide your license plate number! Only Azerbaijani vehicle registration plates are "
+                      "acceptable. Format - 00XX000", chat_id)

@@ -16,7 +16,8 @@ step_conf = {
         "bot_response_message": "Please enter you Metamask wallet address!"
     },
     "walletAddress": {
-        "bot_response_message": "Please enter your Metamask wallet private key!"
+        "bot_response_message": "Please enter your Metamask wallet private key! You can export it from Metamask "
+                                "account details."
     },
     "privateKey": {
         "bot_response_message": "Registering User..."

@@ -16,4 +16,6 @@ def handler(data: dict, chat_state: dict):
 
     update_chat_state(chat_state)
 
-    respond_with_text("Please create password!", chat_id)
+    respond_with_text("Please create password!\n"
+                      "Password must be between 8 and 24 characters in length.\n"
+                      "Password must include both upper-case and lower-case letters, and a number", chat_id)

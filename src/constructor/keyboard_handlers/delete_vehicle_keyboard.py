@@ -1,4 +1,4 @@
-from src.constructor.bot_response import respond_with_text
+from src.constructor.bot_response import respond_with_text, delete_message
 from src.constructor.services.vehicle_crud import remove_user_vehicle
 
 
@@ -8,3 +8,4 @@ def handler(keyboard_id, callback_query, chat_state):
     chat_id = callback_query['message']['chat']['id']
     remove_user_vehicle(username, vehicle_id, chat_id)
     respond_with_text("Deleting selected vehicle...", chat_id)
+    delete_message(chat_id, keyboard_id)

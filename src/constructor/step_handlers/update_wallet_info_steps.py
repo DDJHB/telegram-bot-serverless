@@ -12,7 +12,8 @@ update_sequence = [
 
 step_conf = {
     "newWalletAddress": {
-        "bot_response_message": "Enter Metamask wallet private key!"
+        "bot_response_message": "Enter Metamask wallet private key! You can export it from Metamask "
+                                "account details."
     },
     "newPrivateKey": {
         "bot_response_message": "Wallet information has been updated!"

@@ -15,7 +15,8 @@ update_sequence = [
 
 step_conf = {
     "oldPassword": {
-        "bot_response_message": "Enter new password!"
+        "bot_response_message": "Enter new password! Password must be between 8 and 24 characters in length.\n"
+                                "Password must include both upper-case and lower-case letters, and a number"
     },
     "newPassword": {
         "bot_response_message": "Updating user information..."
@@ -39,8 +40,8 @@ def step_handler(data, chat_state):
 
     if prev_step_index == 0:
         if not check_password(
-            username=data["message"]["chat"]["username"],
-            password=json.loads(chat_state['command_info'])['oldPassword']
+                username=data["message"]["chat"]["username"],
+                password=json.loads(chat_state['command_info'])['oldPassword']
         ):
             respond_with_text("User password is not correct.", chat_id)
             return
