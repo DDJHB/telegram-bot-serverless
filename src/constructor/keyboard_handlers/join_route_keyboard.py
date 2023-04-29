@@ -21,6 +21,13 @@ def handler(keyboard_id, callback_query, chat_state):
         return
 
     route = get_route_by_id(route_id)
+
+    is_passenger, error_message = validate_driver_against_route(chat_id, route)
+
+    if not is_passenger:
+        respond_with_text(error_message, chat_id)
+        return
+
     can_join, error_message = validate_user_against_route(username, chat_id, route)
 
     if not can_join:
@@ -40,6 +47,11 @@ def handler(keyboard_id, callback_query, chat_state):
         )
     except:
         respond_with_text("Could not withdraw the amount from the registered wallet", chat_id)
+
+
+def validate_driver_against_route(route, chat_id):
+    if chat_id == route["owner_chat_id"]:
+        return False, "You cannot join you own ride.."
 
 
 def validate_user_against_route(username, chat_id, route):
