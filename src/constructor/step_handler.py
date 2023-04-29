@@ -7,7 +7,7 @@ from src.constructor.step_handlers import (
     update_wallet_info_steps,
     add_vehicle_steps,
     delete_route_steps,
-    join_route_steps,
+    join_route_steps, delete_account_steps,
 )
 from src.constructor.bot_response import respond_with_text
 
@@ -35,6 +35,7 @@ def map_active_command_to_handler(active_command: str):
         "register": register_steps,
         "updatePassword": update_password_steps,
         "updateWalletInfo": update_wallet_info_steps,
+        "deleteAccount": delete_account_steps,
         "addVehicle": add_vehicle_steps,
     }
     return mapped_handlers.get(active_command)

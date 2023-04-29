@@ -1,5 +1,6 @@
 import json
 import math
+import pytz
 from datetime import datetime
 from decimal import Decimal
 
@@ -135,7 +136,7 @@ def validate_start_time(start_time: str) -> bool:
     date_format = "%d.%m.%Y %H:%M"
     try:
         start_time = datetime.strptime(start_time, date_format)
-        if start_time > datetime.now(): # TODO FIX THE TIMEZONES - LAMBDA IS NOT AROUND
+        if start_time > datetime.now(pytz.timezone('Etc/GMT-4')):
             return True
     except ValueError:
         return False
