@@ -24,14 +24,13 @@ def handler(event, context):
 
         chat_state = get_chat_state(chat_id)
         if not chat_state:
-            put_chat_state(
+            chat_state = put_chat_state(
                 chat_id,
                 {
                     "username": username,
                     "login_timestamp": decimal.Decimal(1.0)
                 }
             )
-        chat_state = get_chat_state(chat_id)  # TODO optimize
 
         error = handle_session_login(data, chat_state, chat_id)
         if error == UserMessageErrors.UserNotSignedIn:
@@ -75,9 +74,11 @@ def handle_session_login(data, chat_state, chat_id):
         return
     if is_login_command(text) or is_start_command(text) or is_register_command(text):
         return
-    if chat_state.get("active_command") == "register":
+
+    active_command = chat_state.get("active_command")
+    if active_command in ("register", "login"):
         return
-    print(chat_state.get("login_timestamp"))
+
     if login_timestamp := chat_state.get("login_timestamp"):
         print(time.time() - float(login_timestamp))
         if time.time() - float(login_timestamp) > day_in_seconds:

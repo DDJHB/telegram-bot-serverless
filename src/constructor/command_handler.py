@@ -1,17 +1,19 @@
-# global commands
-from src.constructor.command_handlers import (
-    start_command, random_command, register_command, login_command, update_password_command, update_wallet_info_command,
-    show_rating_command, help_command, delete_account_command
-)
-# route commands
-from src.constructor.command_handlers import (
-    create_route_command, delete_route_command, show_routes_command, join_route_command,
-    start_route_command, end_route_command
+
+from src.constructor.command_handlers.other_commands import (
+    help_command, start_command, random_command, show_rating_command
 )
 
-# vehicle commands
-from src.constructor.command_handlers import (
-    add_vehicle_command, show_vehicles_command, delete_vehicle_command,
+from src.constructor.command_handlers.account_management_commands import (
+    update_password_command, delete_account_command, update_wallet_info_command, login_command, register_command
+)
+
+from src.constructor.command_handlers.route_commands import (
+    delete_route_command, create_route_command, show_routes_command,
+    start_route_command, end_route_command, join_route_command
+)
+
+from src.constructor.command_handlers.vehicle_commands import (
+    show_vehicles_command, delete_vehicle_command, add_vehicle_command
 )
 
 map_command_to_handler = {
