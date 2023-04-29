@@ -2,7 +2,7 @@ import json
 
 from src.database.chat_state import update_chat_state
 from src.database.routes import get_user_routes
-from src.constructor.bot_response import respond_with_inline_keyboard
+from src.constructor.bot_response import respond_with_inline_keyboard, respond_with_text
 from src.constructor.services.tg_keyboard import build_view_keyboard
 
 keyboard_name = "routes_keyboard"
@@ -13,6 +13,9 @@ def handler(data: dict, chat_state: dict):
     username = data['message']['from']['username']
 
     response = get_user_routes(username)
+    if not response.get("Items", []):
+        respond_with_text("You have not created any routes yet!", chat_id)
+        return
     keyboard_definition = build_view_keyboard(response['Items'])
     tg_response = respond_with_inline_keyboard(
         parent_message="Your routes:",
