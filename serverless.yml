@@ -38,7 +38,7 @@ functions:
     handler: src.message_handler.handler
     events:
       - http:
-          path: my-first-test
+          path: /bot/message
           method: post
           cors: true
 
