@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+import pytz
 
 from src.constructor.bot_response import respond_with_text, respond_with_inline_keyboard
 from src.database.chat_state import update_chat_state
@@ -142,7 +143,7 @@ def validate_start_time(start_time: str) -> bool:
     date_format = "%d.%m.%Y %H:%M"
     try:
         start_time = datetime.strptime(start_time, date_format)
-        if start_time > datetime.now(): # TODO FIX THE TIMEZONES - LAMBDA IS NOT AROUND
+        if start_time > datetime.now(pytz.timezone('Etc/GMT-4')):
             return True
     except ValueError:
         return False
