@@ -102,11 +102,6 @@ def build_navigation_buttons() -> list[dict]:
     ]
 
 
-# vehicle_plate_number = get_user_vehicle(route['owner_username'], route["vehicle_index"])
-#         respond_with_text(f"{route.get('routeName', 'random')},\n"
-#                           f"Route start time: {route.get('rideStartTime', 'random')},\n"
-#                           f"Vehicle plate number: {vehicle_plate_number}", route['owner_chat_id'])
-
 def construct_google_maps_url(route_info: dict):
     destination = json.loads(route_info["destinationLocation"])
     source = json.loads(route_info["sourceLocation"])
@@ -136,7 +131,7 @@ def handle_navigation_buttons(keyboard_id, callback_query, chat_state):
         items = response['Items']
 
         # TODO MOVE DOWN U STUPID MORON
-        keyboard_definition = build_view_keyboard(items)
+        keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(items), items)
         update_inline_keyboard(chat_id, keyboard_id, keyboard_definition)
 
         new_last_evaluated_key = response.get('LastEvaluatedKey')
@@ -161,7 +156,7 @@ def handle_navigation_buttons(keyboard_id, callback_query, chat_state):
         response = get_user_routes(username, limit=5, last_key=needed_page_le_key)
         items = response['Items']
 
-        keyboard_definition = build_view_keyboard(items)
+        keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(items), items)
         update_inline_keyboard(chat_id, keyboard_id, keyboard_definition)
 
         new_last_evaluated_key = response.get('LastEvaluatedKey')

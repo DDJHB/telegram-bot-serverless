@@ -195,7 +195,7 @@ def get_route_by_name(username: str, route_name: str):
     return items[0]
 
 
-def get_routes_by_proximity(proximity: str, source_geohash: str, destination_geohash: str):
+def get_routes_by_proximity(proximity: str, source_geohash: str, destination_geohash: str, limit: int = 5):
     precision = map_proximity_to_precision(proximity)
     index_name = index_name_by_precision.get(precision)
 
@@ -211,6 +211,7 @@ def get_routes_by_proximity(proximity: str, source_geohash: str, destination_geo
     }
     response = table.query(
         IndexName=index_name,
+        Limit=limit,
         **query_args
     )
     return response
