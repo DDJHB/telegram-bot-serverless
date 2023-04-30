@@ -12,4 +12,5 @@ update_password - updates user password
 start_route - invokes voting for route start
 end_route - invokes voting for route end
 show_my_rating - shows user rating
+show_joined_routes - shows routes user has joined
 help - shows commands descriptions
