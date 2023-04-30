@@ -7,6 +7,7 @@ def compute_routes(user_route_info: dict, last_key: dict = None):
     user_start_location = user_route_info["sourceLocation"]
     user_end_location = user_route_info["destinationLocation"]
     proximity = user_route_info["searchProximity"]
+    time_range = user_route_info["rideStartTimeRange"]
 
     precision = map_proximity_to_precision(proximity)
 

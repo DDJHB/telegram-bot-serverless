@@ -147,7 +147,7 @@ def validate_start_time_range(time_range: str) -> bool:
     if "-" not in time_range:
         return False
 
-    if time_range.count("-") > 2:
+    if time_range.count("-") > 1:
         return False
 
     lb_time, ub_time = map(lambda x: x.strip(), time_range.split("-"))
