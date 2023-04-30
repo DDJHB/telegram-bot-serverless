@@ -6,7 +6,7 @@ from src.constructor.keyboard_handlers import (
     start_route_keyboard, approve_start_route_keyboard,
     join_route_keyboard, rate_driver_keyboard,
     end_route_keyboard, approve_end_route_keyboard,
-    joined_routes_keyboard,
+    joined_routes_keyboard, leave_route_keyboard,
 )
 
 keyboard_by_name = {
@@ -21,6 +21,7 @@ keyboard_by_name = {
     "join_route_keyboard": join_route_keyboard,
     "rate_driver_keyboard": rate_driver_keyboard,
     "select_route_vehicle_keyboard": select_route_vehicle_keyboard,
+    "leave_route_keyboard": leave_route_keyboard,
 }
 
 

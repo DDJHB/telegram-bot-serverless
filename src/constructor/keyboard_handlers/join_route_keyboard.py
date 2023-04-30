@@ -2,13 +2,12 @@ import json
 from src.database.routes import get_route_by_id, passenger_route_exists
 from src.database.chat_state import update_chat_state
 from src.constructor.services.tg_keyboard import handle_route_info_button
-from src.constructor.bot_response import respond_with_text, delete_message
+from src.constructor.bot_response import respond_with_text
 from src.constructor.payment_handlers.payment_utils import deposit_to_contract
 from src.constructor.services.route import compute_routes
 from src.constructor.services.tg_keyboard import (
     extend_keyboard_with_route_id_buttons, build_view_keyboard, update_inline_keyboard
 )
-from src.database.routes import update_route, put_passenger_route
 
 def handler(keyboard_id, callback_query, chat_state):
     button_info = callback_query['data']
@@ -46,28 +45,19 @@ def handler(keyboard_id, callback_query, chat_state):
         respond_with_text(error_message, chat_id)
         return
 
+    respond_with_text(f"Joining route {route['route_name']}...", chat_id)
     try:
-        # deposit_to_contract( TODO move back
-        #     username=username,
-        #     amount=route["pricePerPerson"],
-        #     chat_id=chat_id,
-        #     additional_information={
-        #         "route_id": route_id,
-        #         "username": username,
-        #         "chat_id": chat_id,
-        #     }
-        # )
-        route.update({"joined_users_count": route["joined_users_count"] + 1})
-        update_route(route)
-
-        put_passenger_route(
-            driver_route=route,
+        deposit_to_contract(
             username=username,
+            amount=route["pricePerPerson"],
             chat_id=chat_id,
+            additional_information={
+                "route_id": route_id,
+                "username": username,
+                "chat_id": chat_id,
+                "keyboard_id": keyboard_id,
+            }
         )
-
-        delete_message(chat_id, keyboard_id)
-        respond_with_text(f"Successfully joined route {route.get('route_name', 'random')}", chat_id)
     except:
         respond_with_text("Could not withdraw the amount from the registered wallet", chat_id)
 

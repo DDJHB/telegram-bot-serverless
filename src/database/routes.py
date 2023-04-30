@@ -259,6 +259,15 @@ def delete_user_route(pk, sk):
     )
 
 
+def delete_passenger_route(username: str, route_id: str):
+    table.delete_item(
+        Key={
+            "pk": make_key(ROUTE_TYPENAME, route_id),
+            "sk": make_key(PASSENGER_TYPENAME, username),
+        }
+    )
+
+
 def passenger_route_exists(username: str, route_id: str):
     response = table.get_item(
         Key={

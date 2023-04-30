@@ -1,7 +1,6 @@
 
 from src.constructor.services.tg_keyboard import handle_navigation_buttons, handle_route_info_button
-from src.database.routes import get_user_routes
-from src.database.routes import get_route_by_id
+from src.database.routes import get_user_routes, get_route_by_id
 
 
 def handler(keyboard_id, callback_query, chat_state):

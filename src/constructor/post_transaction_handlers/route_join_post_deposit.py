@@ -1,7 +1,7 @@
 import json
 
 from src.database.routes import get_route_by_id, update_route, put_passenger_route
-from src.constructor.bot_response import respond_with_text
+from src.constructor.bot_response import respond_with_text, delete_message
 
 
 def handle_tx_logs(tx_logs, tx_data):
@@ -25,6 +25,7 @@ def handle_tx_logs(tx_logs, tx_data):
                 chat_id=chat_id,
             )
 
+            delete_message(chat_id, additional_info["keyboard_id"])
             respond_with_text(f"Successfully joined route {route.get('route_name', 'random')}", chat_id)
         else:
             respond_with_text(f"There was an error with money withdrawal on your wallet", chat_id)

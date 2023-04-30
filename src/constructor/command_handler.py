@@ -10,7 +10,7 @@ from src.constructor.command_handlers.account_management_commands import (
 from src.constructor.command_handlers.route_commands import (
     delete_route_command, create_route_command, show_routes_command,
     start_route_command, end_route_command, join_route_command,
-    show_joined_routes_command,
+    show_joined_routes_command, leave_route,
 )
 
 from src.constructor.command_handlers.vehicle_commands import (
@@ -36,6 +36,7 @@ map_command_to_handler = {
     "/delete_vehicle": delete_vehicle_command,
     "/show_my_rating": show_rating_command,
     "/show_joined_routes": show_joined_routes_command,
+    "/leave_route": leave_route,
     "/help": help_command,
 }
 
