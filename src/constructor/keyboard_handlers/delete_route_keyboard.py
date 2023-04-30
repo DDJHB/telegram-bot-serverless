@@ -2,7 +2,7 @@
 from src.database.routes import delete_user_route, get_route_by_id_and_username, get_route_by_id
 from src.constructor.services.tg_keyboard import handle_navigation_buttons, handle_route_info_button
 from src.database.routes import get_user_routes, get_passengers_routes_by_route_id
-from src.constructor.bot_response import respond_with_text
+from src.constructor.bot_response import respond_with_text, delete_message
 
 
 def handler(keyboard_id, callback_query, chat_state):
@@ -37,4 +37,5 @@ def handler(keyboard_id, callback_query, chat_state):
         respond_with_text("The route has active passengers, can not delete!", chat_id)
 
     delete_user_route(route["pk"], route["sk"])
+    delete_message(chat_id, keyboard_id)
     respond_with_text("Route successfully deleted!", chat_id)

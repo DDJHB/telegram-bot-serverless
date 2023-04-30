@@ -3,13 +3,14 @@ import json
 from src.database.routes import get_passengers_routes_by_route_id, get_route_by_id, get_user_routes
 from src.database.chat_state import update_chat_state, get_chat_state
 from src.constructor.services.tg_keyboard import handle_navigation_buttons
-from src.constructor.bot_response import respond_with_inline_keyboard
+from src.constructor.bot_response import respond_with_inline_keyboard, delete_message, respond_with_text
 from src.constructor.services.tg_keyboard import build_approval_keyboard
 
 
 def handler(keyboard_id, callback_query, chat_state):
     button_info = callback_query['data']  # route_id
     username = callback_query["from"]["username"]
+    chat_id = callback_query["from"]["id"]
 
     if any(button_info.startswith(button_name) for button_name in ["next", "back"]):
         handle_navigation_buttons(
@@ -26,6 +27,9 @@ def handler(keyboard_id, callback_query, chat_state):
     passenger_chat_ids = [item["chat_id"] for item in passenger_routes]
 
     route = get_route_by_id(button_info)
+
+    delete_message(chat_id, keyboard_id)
+    respond_with_text("Started Voting...", chat_id)
 
     keyboard_def = build_approval_keyboard(route)
 

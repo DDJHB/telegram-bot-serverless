@@ -3,7 +3,7 @@ import json
 from src.database.routes import get_passengers_routes_by_route_id, get_route_by_id, update_route, get_user_routes
 from src.database.chat_state import update_chat_state, get_chat_state
 from src.constructor.services.tg_keyboard import handle_navigation_buttons, handle_route_info_button
-from src.constructor.bot_response import respond_with_inline_keyboard, respond_with_text
+from src.constructor.bot_response import respond_with_inline_keyboard, respond_with_text, delete_message
 from src.constructor.services.tg_keyboard import build_approval_keyboard
 
 
@@ -32,6 +32,9 @@ def handler(keyboard_id, callback_query, chat_state):
     if route["has_started"]:
         respond_with_text("This ride has already started!", callback_query['message']['chat']['id'])
         return
+
+    delete_message(chat_id, keyboard_id)
+    respond_with_text("Started Voting...", chat_id)
 
     route.update({
         "has_started": False,
