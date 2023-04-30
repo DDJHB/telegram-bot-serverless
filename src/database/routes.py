@@ -5,7 +5,7 @@ from uuid import uuid4
 import geohash
 
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Key, Attr
 
 resource = boto3.resource('dynamodb')
 table = resource.Table('routes-table-v2')
@@ -202,6 +202,8 @@ def get_routes_by_proximity(
     source_geohash: str,
     destination_geohash: str,
     limit: int = 5,
+    filter_by_time: bool = False,
+    range: tuple = (),
     last_key: dict = None
 ):
     precision = map_proximity_to_precision(proximity)
@@ -220,6 +222,10 @@ def get_routes_by_proximity(
 
     if last_key:
         query_args.update({"ExclusiveStartKey": last_key})
+
+    if filter_by_time:
+        lb_epoch, ub_epoch = range
+        query_args.update({"FilterExpression": Attr("start_time_epoch").between(lb_epoch, ub_epoch)})
 
     response = table.query(
         IndexName=index_name,
