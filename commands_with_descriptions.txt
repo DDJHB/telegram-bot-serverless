@@ -14,4 +14,5 @@ end_route - invokes voting for route end
 show_my_rating - shows user rating
 show_joined_routes - shows routes user has joined
 leave_route - allows to leave one of the joined routes, with booking refunded
+delete_account - deletes user account
 help - shows commands descriptions

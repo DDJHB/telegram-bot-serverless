@@ -1,7 +1,6 @@
 import json
 import web3.exceptions
 from web3 import Web3
-import re
 
 from src.constructor.web3_utils import send_transaction_to_contract, call_view_contract_method
 from src.database.chat_state import update_chat_state
@@ -57,7 +56,7 @@ def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
     }
     key_validator = validator_by_key[key]
     try:
-        is_valid = key_validator(data["message"]["username"], data["message"]["text"])
+        is_valid = key_validator(data["message"]["from"]["username"], data["message"]["text"])
         if not is_valid:
             raise UserDataInvalid
     except KeyError as error:

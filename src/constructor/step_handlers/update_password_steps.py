@@ -115,7 +115,7 @@ def check_password(username: str, password: str):
 
 
 def update_user(username: str, password: str, chat_id: int):
-    function_name = "updatePassword"
+    function_name = "changePassword"
     contract_name = "onboarding"
 
     wallet_info = get_user_info_record(username)

@@ -22,7 +22,7 @@ event_processing = {
     "deposit": "Deposit",
     "processPayment": "Transfer",
     "withdraw": "Withdraw",
-    "updatePassword": "PasswordChangeInfo",
+    "changePassword": "PasswordChangeInfo",
     "addVehicle": "AddVehicleInformation",
     "deleteVehicle": "DeleteVehicleInformation"
 }

@@ -11,7 +11,7 @@ from src.constructor.services.tg_keyboard import build_view_keyboard, extend_key
 # TODO: validate and not return the routes that have reached max capacity
 
 join_routes_sequence = [
-    "sourceLocation", "destinationLocation", "searchProximity", "rideStartTime",
+    "sourceLocation", "destinationLocation", "searchProximity", "rideStartTimeRange",
 ]
 
 step_conf = {
@@ -26,9 +26,9 @@ step_conf = {
     },
     "searchProximity": {
         "lookup_key": "text",
-        "bot_response_message": "Please enter the ride start time! (dd.MM.yyyy hh:mm)"
+        "bot_response_message": "Please enter the ride start time range! (dd.MM.yyyy hh:mm - dd.MM.yyyy hh:mm)"
     },
-    "rideStartTime": {
+    "rideStartTimeRange": {
         "lookup_key": "text",
         "bot_response_message": None
     },
@@ -97,7 +97,7 @@ def handle_prev_step_data(data: dict, prev_step_index: int) -> dict:
     key = join_routes_sequence[prev_step_index]
     tg_message_lookup_key = step_conf[key]["lookup_key"]
     validator_by_key = {
-        "rideStartTime": validate_start_time,
+        "rideStartTimeRange": validate_start_time_range,
         "sourceLocation": do_not_validate,
         "destinationLocation": do_not_validate,
         "searchProximity": validate_search_proximity,
@@ -139,20 +139,39 @@ def validate_search_proximity(proximity: str) -> bool:
     return False
 
 
-def validate_start_time(start_time: str) -> bool:
+def validate_start_time_range(time_range: str) -> bool:
     """
-    correct format -> dd.MM.yyyy hh:mm
+    correct format for single date -> dd.MM.yyyy hh:mm
+    format for range -> dd.MM.yyyy hh:mm - dd.MM.yyyy hh:mm
     """
+    if "-" not in time_range:
+        return False
+
+    if time_range.count("-") > 2:
+        return False
+
+    lb_time, ub_time = map(lambda x: x.strip(), time_range.split("-"))
+
     date_format = "%d.%m.%Y %H:%M"
     try:
-        timezone = pytz.timezone('Etc/GMT-4')
-        start_time = timezone.localize(datetime.strptime(start_time, date_format))
-        if start_time > datetime.now(pytz.timezone('Etc/GMT-4')):
-            return True
+        compare_time_order(lb_time, ub_time)
+        for start_time in (lb_time, ub_time):
+            timezone = pytz.timezone('Etc/GMT-4')
+            start_time = timezone.localize(datetime.strptime(start_time, date_format))
+            if start_time < datetime.now(pytz.timezone('Etc/GMT-4')):
+                return False
     except ValueError:
         return False
 
-    return False
+    return True
+
+
+def compare_time_order(time_a, time_b):
+    date_format = "%d.%m.%Y %H:%M"
+    timezone = pytz.timezone('Etc/GMT-4')
+    t_time_a = timezone.localize(datetime.strptime(time_a, date_format))
+    t_time_b = timezone.localize(datetime.strptime(time_b, date_format))
+    return t_time_a < t_time_b
 
 
 class UserDataInvalid(Exception):
