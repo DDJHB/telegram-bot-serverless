@@ -192,12 +192,12 @@ def handle_route_info_button(route, chat_id):
     route_info_message = f"Route Name: {route['route_name']}\n"
     route_info_message += f"Route Start Time: {route['rideStartTime']}\n"
     route_info_message += f"Driver: {route['owner_username']}"
-    if driver_info['raters_num'] != 0:
+    if driver_info and driver_info['raters_num'] != 0:
         route_info_message += f" with the rating of {driver_info['rating']}\U00002B50 based on {driver_info['raters-num']} votes"
     route_info_message += f"\nVehicle:\n"
     route_info_message += extend_with_tabbed_bullet(f"plate number: {vehicle[0]}\n")
     route_info_message += extend_with_tabbed_bullet(f"model: {vehicle[1]}\n")
     route_info_message += extend_with_tabbed_bullet(f"color: {vehicle[2]}\n")
     route_info_message += extend_with_tabbed_bullet(f"year: {vehicle[3]}\n")
-    route_info_message += extend_with_tabbed_bullet(f"Route Price: {route['pricePerPerson']} Finney")
+    route_info_message += f"Route Price: {route['pricePerPerson']} Finney"
     respond_with_text(route_info_message, chat_id)

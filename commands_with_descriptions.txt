@@ -1,0 +1,15 @@
+register - register user account
+login - log into application
+add_vehicle - register a new vehicle
+show_vehicles - show registered vehicles
+delete_vehicle - deletes one of previously registered
+create_route - starts creation of a route
+show_my_routes - shows user owned routes
+delete_route - deletes one of previously created routes
+join_route - searches and allows to join a route
+update_wallet_info - starts wallet update process
+update_password - updates user password
+start_route - invokes voting for route start
+end_route - invokes voting for route end
+show_my_rating - shows user rating
+help - shows commands descriptions

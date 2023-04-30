@@ -157,15 +157,17 @@ def update_route(route_record):
 
 
 def get_user_routes(
-        username: str,
-        limit: int = 5,
-        last_key: 'dict|None' = None,
+    username: str,
+    limit: int = 5,
+    last_key: 'dict|None' = None,
+    is_passenger: bool = False,
 ):
+    typename = DRIVER_TYPENAME if not is_passenger else PASSENGER_TYPENAME
     query_args = {
         "KeyConditionExpression": (
-                Key('gsi3pk').eq(make_key(DRIVER_TYPENAME, username))
+                Key('gsi3pk').eq(make_key(typename, username))
                 &
-                Key('gsi3sk').eq(make_key(DRIVER_TYPENAME, username))
+                Key('gsi3sk').eq(make_key(typename, username))
         ),
         "Limit": limit,
     }
