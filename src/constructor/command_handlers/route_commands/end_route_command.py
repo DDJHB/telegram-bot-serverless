@@ -10,7 +10,6 @@ def handler(data: dict, chat_state: dict):
     chat_id = data["message"]["chat"]["id"]
     username = data['message']['from']['username']
 
-    respond_with_text("Select route number below", chat_id)
 
     response = get_user_routes(username)
     routes = response.get('Items', [])
@@ -18,6 +17,7 @@ def handler(data: dict, chat_state: dict):
         respond_with_text("You do not have any routes!", chat_id)
         return
     keyboard_def = extend_keyboard_with_route_id_buttons(build_view_keyboard(routes), routes)
+    respond_with_text("Select route number below", chat_id)
     tg_response = respond_with_inline_keyboard(
         parent_message="Your routes:",
         keyboard_definition=keyboard_def,
