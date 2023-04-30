@@ -106,3 +106,28 @@ def remove_user_vehicle(username: str, index: int, chat_id: int):
             "function_args": json.dumps({})
         }
     )
+
+
+def remove_user_vehicles(username: str, chat_id: int):
+    function_name = "deleteAllVehicles"
+
+    wallet_info = get_user_info_record(username=username)
+
+    tx_hash = send_transaction_to_contract(
+        wallet_info=wallet_info,
+        contract_name=contract_name,
+        function_name=function_name,
+        function_args=[username],
+    )
+
+    # save to db
+    put_transaction_request(
+        tx_hash=tx_hash,
+        chat_id=chat_id,
+        extra_fields={
+            "username": username,
+            "function_name": function_name,
+            "contract_name": contract_name,
+            "function_args": json.dumps({})
+        }
+    )

@@ -2,6 +2,7 @@ import json
 import web3.exceptions
 from web3 import Web3
 
+from src.constructor.services.vehicle_crud import remove_user_vehicles
 from src.constructor.web3_utils import send_transaction_to_contract, call_view_contract_method
 from src.database.chat_state import update_chat_state
 from src.database.eth_transactions import put_transaction_request
@@ -32,6 +33,11 @@ def step_handler(data, chat_state):
     old_command_info = json.loads(chat_state['command_info'])
     new_command_info = old_command_info | update_command_info
     chat_state["command_info"] = json.dumps(new_command_info)
+
+    remove_user_vehicles(
+        username=data["message"]["chat"]["username"],
+        chat_id=data["message"]["chat"]["id"]
+    )
 
     delete_user(
         username=data["message"]["chat"]["username"],

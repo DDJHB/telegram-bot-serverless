@@ -25,7 +25,8 @@ event_processing = {
     "changePassword": "PasswordChangeInfo",
     "deleteAccount": "AccountDeletionInfo",
     "addVehicle": "AddVehicleInformation",
-    "deleteVehicle": "DeleteVehicleInformation"
+    "deleteVehicle": "DeleteVehicleInformation",
+    "deleteAllVehicles": "DeleteVehiclesInformation",
 }
 
 
