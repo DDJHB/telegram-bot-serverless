@@ -55,6 +55,9 @@ def step_handler(data, chat_state):
         chat_state["active_command"] = None
         routes_info = compute_routes(new_command_info)
         routes = routes_info.get("Items", [])
+        if not routes:
+            respond_with_text("No suitable routes found!", chat_id)
+
         keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(routes), routes)
         tg_response = respond_with_inline_keyboard(
             parent_message="Found Routes:",

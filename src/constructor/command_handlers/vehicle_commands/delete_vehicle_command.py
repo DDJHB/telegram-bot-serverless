@@ -18,6 +18,8 @@ def handler(data: dict, chat_state: dict):
     respond_with_text("Select a vehicle you want to remove:", chat_id)
 
     licenses = [v[0] for v in vehicles]
+    if not licenses:
+        respond_with_text("You do not have any vehicles registered!", chat_id)
 
     keyboard_def = build_indexed_keyboard(licenses)
     tg_response = respond_with_inline_keyboard(
