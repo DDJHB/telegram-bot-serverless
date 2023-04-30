@@ -71,7 +71,7 @@ def step_handler(data, chat_state):
         licenses = [v[0] for v in vehicles]
         if not licenses:
             respond_with_text("You do not have any vehicles registered!", chat_id)
-
+            return
         keyboard_def = build_indexed_keyboard(licenses)
         tg_response = respond_with_inline_keyboard(
             parent_message="Your vehicles:",

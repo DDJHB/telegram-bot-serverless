@@ -57,7 +57,7 @@ def step_handler(data, chat_state):
         routes = routes_info.get("Items", [])
         if not routes:
             respond_with_text("No suitable routes found!", chat_id)
-
+            return
         keyboard_definition = extend_keyboard_with_route_id_buttons(build_view_keyboard(routes), routes)
         tg_response = respond_with_inline_keyboard(
             parent_message="Found Routes:",

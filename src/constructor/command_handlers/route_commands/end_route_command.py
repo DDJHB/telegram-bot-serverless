@@ -16,7 +16,7 @@ def handler(data: dict, chat_state: dict):
     routes = response.get('Items', [])
     if not routes:
         respond_with_text("You do not have any routes!", chat_id)
-
+        return
     keyboard_def = extend_keyboard_with_route_id_buttons(build_view_keyboard(routes), routes)
     tg_response = respond_with_inline_keyboard(
         parent_message="Your routes:",
