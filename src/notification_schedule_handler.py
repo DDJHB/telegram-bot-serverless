@@ -11,7 +11,6 @@ def handler(event, context):
     try:
         routes_1_hour = get_routes_by_start_time(1)
         routes_24_hour = get_routes_by_start_time(24)
-        print(routes_1_hour, routes_24_hour)
 
         for item in routes_1_hour.get('Items', []):
             keyboard_def = build_notification_view_keyboard(item)
@@ -33,7 +32,6 @@ def handler(event, context):
 
         return {'statusCode': 200}
     except Exception as error:
-        print(error)
         return {'statusCode': 200}
 
 

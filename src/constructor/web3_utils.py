@@ -81,9 +81,7 @@ def send_transaction_to_contract(wallet_info: dict, contract_name: str, function
 def call_view_contract_method(contract_name: str, function_name: str, function_args: list):
     contract = get_contract_info(contract_name)
     function = contract.functions[function_name]
-    print(*function_args)
     response = function(*function_args).call()
-    print(response)
     return response
 
 

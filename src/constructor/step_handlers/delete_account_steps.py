@@ -85,9 +85,7 @@ def check_password(username: str, password: str):
             function_name="login",
             function_args=[username, Web3.keccak(text=password)]
         )
-        print(response)
     except web3.exceptions.ContractLogicError as error:
-        print(error)
         return False
 
     return True

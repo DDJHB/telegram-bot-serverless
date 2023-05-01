@@ -36,9 +36,7 @@ def respond_with_inline_keyboard(
         "chat_id": chat_id,
         "reply_markup": json.dumps(keyboard_definition),
     }
-    print(data)
     response = requests.post(url, data)
-    print(response.status_code, response.text)
 
     return response
 
@@ -65,4 +63,3 @@ def update_inline_keyboard(
         "reply_markup": keyboard_definition,
     }
     response = requests.post(url, data)
-    print(response.status_code, response.text)

@@ -46,9 +46,7 @@ def login_user(username, password):
             function_name="login",
             function_args=[username, Web3.keccak(text=password)]
         )
-        print(response)
     except web3.exceptions.ContractLogicError as error:
-        print(error)
         return LoginResponses.InvalidPassword, "User is not registered/password is not correct"
 
     return LoginResponses.CorrectCredentials, "User has been signed in..."

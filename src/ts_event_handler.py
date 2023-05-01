@@ -35,5 +35,4 @@ def handler(event, context):
 
         return {'statusCode': 200}
     except Exception as error:
-        print(error)
         return {'statusCode': 200}

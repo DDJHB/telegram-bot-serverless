@@ -25,7 +25,6 @@ def handler(keyboard_id, callback_query, chat_state):
             passenger_wallet_addresses = [get_user_info_record(username)["wallet_address"] for username in passenger_usernames]
 
             total_amount = route["pricePerPerson"] * len(passenger_routes)
-            print(passenger_wallet_addresses, total_amount)
             transfer(passenger_wallet_addresses, route["owner_username"], total_amount, route["owner_chat_id"])
 
             for passenger_route in passenger_routes:

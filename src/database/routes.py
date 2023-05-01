@@ -29,7 +29,6 @@ def map_proximity_to_precision(proximity: str) -> int:
     }
 
     precision = precision_by_proximity.get(proximity)
-    print("Geo Precision: ", precision)
 
     return precision
 
@@ -83,7 +82,6 @@ def put_passenger_route(driver_route: dict, username: str, chat_id: int):
         "chat_id": chat_id,
         "username": username,
     }
-    print(passenger_route)
 
     proximity_indexes_attributes = [
         "source_geohash_close",
@@ -246,7 +244,6 @@ def get_routes_by_start_time(time_left: int):
         ),
     }
 
-    print(now + time_left * 3600 - 300, now + time_left * 3600 + 30)
 
     response = table.query(
         IndexName="gsi4",

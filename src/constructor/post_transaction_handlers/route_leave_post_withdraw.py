@@ -5,7 +5,6 @@ from src.constructor.bot_response import respond_with_text, delete_message
 
 
 def handle_tx_logs(tx_logs, tx_data):
-    print(tx_logs)
     additional_info = json.loads(tx_data["additional_information"])
 
     route = get_route_by_id(additional_info["route_id"])
@@ -14,7 +13,6 @@ def handle_tx_logs(tx_logs, tx_data):
     username = additional_info["username"]
     chat_id = additional_info["chat_id"]
     if withdraw_status := tx_logs[0]['args'].get('status'):
-        print(withdraw_status)
         if withdraw_status:
             route.update({"joined_users_count": route["joined_users_count"] - 1})
             update_route(route)

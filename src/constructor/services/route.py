@@ -29,7 +29,6 @@ def compute_routes(user_route_info: dict, last_key: dict = None):
             range=(lb_epoch, ub_epoch),
             last_key=last_key,
         )
-        print(routes_info)
         routes.extend(routes_info.get("Items", []))
         if not (last_key := routes_info.get("LastEvaluatedKey")):
             break
