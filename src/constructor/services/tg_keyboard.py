@@ -138,7 +138,6 @@ def handle_navigation_buttons(
         response = query_method(**query_args, last_key=last_evaluated_key)
         items = response['Items']
 
-        # TODO MOVE DOWN U STUPID MORON
         keyboard_definition = build_view_keyboard(items)
         if extend_with_indices:
             keyboard_definition = extend_keyboard_with_route_id_buttons(keyboard_definition, items)
