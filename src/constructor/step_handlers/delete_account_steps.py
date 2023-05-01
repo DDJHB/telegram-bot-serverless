@@ -1,6 +1,7 @@
 import json
 import web3.exceptions
 from web3 import Web3
+import decimal
 
 from src.constructor.services.vehicle_crud import remove_user_vehicles
 from src.constructor.web3_utils import send_transaction_to_contract, call_view_contract_method
@@ -34,11 +35,6 @@ def step_handler(data, chat_state):
     new_command_info = old_command_info | update_command_info
     chat_state["command_info"] = json.dumps(new_command_info)
 
-    remove_user_vehicles(
-        username=data["message"]["chat"]["username"],
-        chat_id=data["message"]["chat"]["id"]
-    )
-
     delete_user(
         username=data["message"]["chat"]["username"],
         chat_id=data["message"]["chat"]["id"],
@@ -47,6 +43,7 @@ def step_handler(data, chat_state):
     delete_user_info_record(username=data["message"]["chat"]["username"])
 
     chat_state["active_command"] = None
+    chat_state["login_timestamp"] = decimal.Decimal(1.0)
 
     chat_state["current_step_index"] = prev_step_index + 1
     update_chat_state(chat_state)
