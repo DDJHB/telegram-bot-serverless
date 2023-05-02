@@ -282,6 +282,23 @@ def passenger_route_exists(username: str, route_id: str):
     return response.get("Item")
 
 
+def collect_associated_route_records(route_id):
+    driver_route = get_route_by_id(route_id)
+    passenger_routes = get_passengers_routes_by_route_id(route_id).get("Items", [])
+    print([driver_route] + passenger_routes)
+    return [driver_route] + passenger_routes
+
+
+def delete_routes(routes):
+    for route in routes:
+        table.delete_item(
+            Key={
+                "pk": route["pk"],
+                "sk": route["sk"],
+            }
+        )
+
+
 def prepare_inner_dicts_for_db(info):
     new_info = {}
     for key in info.keys():

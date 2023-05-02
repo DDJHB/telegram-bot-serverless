@@ -34,6 +34,7 @@ def step_handler(data, chat_state):
 
     chat_state.update({
         "active_command": None,
+        "command_info": None,
         'login_timestamp': Decimal(time.time())
     })
     update_chat_state(chat_state)

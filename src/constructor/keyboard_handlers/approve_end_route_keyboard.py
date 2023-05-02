@@ -2,7 +2,11 @@ import json
 import math
 
 from src.constructor.services.ranking import rate_driver
-from src.database.routes import get_route_by_id, update_route, get_passengers_routes_by_route_id
+from src.database.routes import (
+    get_route_by_id,
+    update_route,
+    get_passengers_routes_by_route_id,
+)
 from src.database.user_info import get_user_info_record
 from src.constructor.payment_handlers.payment_utils import transfer
 from src.constructor.bot_response import respond_with_text, delete_message
@@ -25,7 +29,7 @@ def handler(keyboard_id, callback_query, chat_state):
             passenger_wallet_addresses = [get_user_info_record(username)["wallet_address"] for username in passenger_usernames]
 
             total_amount = route["pricePerPerson"] * len(passenger_routes)
-            transfer(passenger_wallet_addresses, route["owner_username"], total_amount, route["owner_chat_id"])
+            transfer(passenger_wallet_addresses, route["owner_username"], total_amount, route["owner_chat_id"], {})
 
             for passenger_route in passenger_routes:
                 respond_with_text("Your ride has ended!", passenger_route["chat_id"])
@@ -52,5 +56,4 @@ def handler(keyboard_id, callback_query, chat_state):
 
     route['approval_info'] = json.dumps(route['approval_info'])
     update_route(route)
-
     delete_message(chat_id, keyboard_id)
